@@ -18,21 +18,31 @@ Install the required Node.js packages: npm install
 Create a .env file in the root directory to store sensitive information like database credentials, Twilio API keys, etc.
 
 Example .env file:
+
 PORT=your-local-port-run-server
+
 CLIENT_URL=your-local-url
+
 SUPABASE_URL=your-supabase-url
+
 SUPABASE_KEY=your-supabase-api-key
 
 JWT_SECRET=your-jwt-secret
+
 DEFAULT_PASSWORD=your-default-password-for-user
+
 FASTAPI=your-fast-api
+
 URL_MOMO=your-url-momo
 
-#For db
 DB_NAME=your-db-name
+
 DB_USER= your-db-username
+
 DB_PASSWORD=o8K4oXtUJrM9Msxh
+
 DB_HOST=aws-0-ap-southeast-1.pooler.supabase.com
+
 DB_PORT=6543
 
 
