@@ -1,29 +1,76 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model } from "sequelize";
 
-export default (sequelize) => {
+export default (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      // define association here
       User.belongsTo(models.Role, {
-        foreignKey: 'role_code',
-        targetKey: 'code',
-        as: 'roleData'
+        foreignKey: "role_id",
+        as: "role",
+      });
+
+      User.hasOne(models.Admin, {
+        foreignKey: "admin_id",
+        sourceKey: "id",
+        as: "admin",
+      });
+
+      User.hasOne(models.Candidate, {
+        foreignKey: "candidate_id",
+        sourceKey: "id",
+        as: "candidate",
+      });
+
+      User.hasOne(models.Recruiter, {
+        foreignKey: "recruiter_id",
+        sourceKey: "id",
+        as: "recruiter",
       });
     }
   }
 
   User.init(
     {
-      name: DataTypes.STRING,
-      email: DataTypes.STRING,
-      password: DataTypes.STRING,
-      avatar: DataTypes.STRING,
-      role_code: DataTypes.STRING,
-      refresh_token: DataTypes.STRING,
+      id: {
+        allowNull: false,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      refresh_token: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      avatar_url: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      supabase_id: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      role_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+      },
     },
     {
       sequelize,
-      modelName: 'User',
+      modelName: "User",
+      underscored: true,
+      tableName: "Users",
     }
   );
 
