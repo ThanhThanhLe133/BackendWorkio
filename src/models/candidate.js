@@ -41,6 +41,10 @@ export default (sequelize) => {
                 type: DataTypes.DATEONLY,
                 allowNull: true,
             },
+            is_verified: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
+            },
         },
         {
             sequelize,

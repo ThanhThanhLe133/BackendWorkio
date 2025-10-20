@@ -43,6 +43,10 @@ export async function up(queryInterface, Sequelize) {
             type: Sequelize.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
         },
+        is_verified: {
+            type: Sequelize.BOOLEAN,
+            defaultValue: false,
+        },
     });
     await queryInterface.sequelize.query(
         `ALTER TABLE "Candidates" ENABLE ROW LEVEL SECURITY;`
