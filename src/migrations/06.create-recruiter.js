@@ -13,20 +13,6 @@ export async function up(queryInterface, Sequelize) {
       type: Sequelize.STRING,
       allowNull: true,
     },
-    address: {
-      type: Sequelize.STRING,
-      allowNull: true,
-    },
-    field_id: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Fields',
-        key: 'id',
-      },
-      onUpdate: 'CASCADE',
-      onDelete: 'RESTRICT',
-    },
     description: {
       type: Sequelize.TEXT,
       allowNull: true,
@@ -38,10 +24,6 @@ export async function up(queryInterface, Sequelize) {
     },
     phone: {
       type: Sequelize.STRING(20),
-      allowNull: true,
-    },
-    email_contact: {
-      type: Sequelize.STRING(100),
       allowNull: true,
     },
     website: {
@@ -56,6 +38,10 @@ export async function up(queryInterface, Sequelize) {
       type: Sequelize.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+    },
+    address_id: {
+      type: Sequelize.UUID,
+      allowNull: true,
     },
     created_at: {
       allowNull: false,

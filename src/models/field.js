@@ -23,10 +23,13 @@ export default (sequelize) => {
                 allowNull: false,
                 unique: true,
             },
-            description: {
-                type: DataTypes.TEXT,
+            value: {
+                type: DataTypes.STRING,
                 allowNull: true,
-            },
+                validate: {
+                    isIn: [["IT", "Finance", "Marketing", "Design", "Sales", "HR", "Operations", "Support", "Legal", "R&D", "Other"]]
+                }
+            }
         },
         {
             sequelize,

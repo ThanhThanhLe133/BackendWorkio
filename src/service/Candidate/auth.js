@@ -2,37 +2,11 @@ import db from '../../models/index.js'
 import bcrypt from "bcryptjs"
 import { google } from 'googleapis';
 import jwt from 'jsonwebtoken'
-import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-
+import { sendVerificationEmail, hashPassword } from '../../helpers/fn.js';
 dotenv.config();
 
-const hashPassword = password => bcrypt.hashSync(password, bcrypt.genSaltSync(10))
-
-export const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-});
-export const sendVerificationEmail = async (email, token) => {
-    const verifyUrl = `${process.env.CLIENT_URL}/candidate/auth/verified?token=${token}`;
-
-    const mailOptions = {
-        from: `"Workio Confirmation" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: 'Confirm your signup to continue',
-        html: `
-            <h2>Confirm your signup in Workio</h2>
-            <p>Click the link below to verify your email (valid for 1 day):</p>
-            <a href="${verifyUrl}">Verify your account</a>
-        `,
-    };
-
-    await transporter.sendMail(mailOptions);
-};
-export const register = ({ email, password }) =>
+export const registerCandidate = ({ email, password }) =>
     new Promise(async (resolve, reject) => {
         try {
             const exist = await db.User.findOne({ where: { email } });
@@ -60,8 +34,6 @@ export const register = ({ email, password }) =>
             await db.Candidate.create({
                 candidate_id: user.id,
                 resume_url: null,
-                experience_years: 0,
-                skills: [],
                 gender: null,
                 address: null,
                 dob: null,
@@ -76,7 +48,7 @@ export const register = ({ email, password }) =>
             reject(error);
         }
     });
-export const verifiedCallBack = async (token) => {
+export const verifiedCallBackCandidate = async (token) => {
     try {
         if (!token) {
             return { err: 1, mes: 'Missing token' };
@@ -119,7 +91,7 @@ export const verifiedCallBack = async (token) => {
     }
 };
 
-export const login = ({ email, password }) =>
+export const loginCandidate = ({ email, password }) =>
     new Promise(async (resolve, reject) => {
         try {
             const user = await db.User.findOne({
@@ -259,8 +231,6 @@ export const googleCallBack = async (code) => {
             await db.Candidate.create({
                 candidate_id: user.id,
                 resume_url: null,
-                experience_years: 0,
-                skills: [],
                 gender: null,
                 address: null,
                 dob: null,

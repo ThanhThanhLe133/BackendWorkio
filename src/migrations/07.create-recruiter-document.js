@@ -20,14 +20,8 @@ export async function up(queryInterface, Sequelize) {
       onDelete: 'CASCADE',
     },
     type: {
-      type: Sequelize.STRING(100),
+      type: Sequelize.ENUM("Business License", "ISO Certificate", "Other"),
       allowNull: false,
-      comment: 'Loại giấy tờ, ví dụ: Giấy phép kinh doanh, Chứng nhận ISO…',
-    },
-    number: {
-      type: Sequelize.STRING(100),
-      allowNull: true,
-      comment: 'Số giấy tờ hoặc mã định danh',
     },
     issue_date: {
       type: Sequelize.DATEONLY,

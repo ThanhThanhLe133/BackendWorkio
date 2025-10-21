@@ -1,16 +1,15 @@
 import * as services from '../../service/index.js'
 import { internalServerError, badRequest } from '../../middleWares/handle_error.js'
-import { email, password, refresh_token } from '../../helpers/joi_schema.js'
+import { email, password } from '../../helpers/joi_schema.js'
 import joi from 'joi'
-import jwt from 'jsonwebtoken'
 
-export const register = async (req, res) => {
+export const registerCandidate = async (req, res) => {
     try {
         const { error } = joi.object({ email, password }).validate(req.body)
         if (error)
             return badRequest(error.details[0]?.message, res)
 
-        const response = await services.register(req.body)
+        const response = await services.registerCandidate(req.body)
 
         return res.status(200).json(response)
     } catch (error) {
@@ -18,7 +17,7 @@ export const register = async (req, res) => {
     }
 }
 
-export const verifiedCallBack = async (req, res) => {
+export const verifiedCallBackCandidate = async (req, res) => {
     try {
         const { token } = req.query;
 
@@ -26,7 +25,7 @@ export const verifiedCallBack = async (req, res) => {
             return res.status(400).json({ err: 1, mes: 'Missing token parameter' });
         }
 
-        const response = await services.verifiedCallBack(token);
+        const response = await services.verifiedCallBackCandidate(token);
 
         return res.status(200).json(response)
         // return res.redirect(
@@ -39,7 +38,7 @@ export const verifiedCallBack = async (req, res) => {
     }
 }
 
-export const login = async (req, res) => {
+export const loginCandidate = async (req, res) => {
     try {
         const { email, password } = req.body
         if (!email || !password) {
@@ -51,7 +50,7 @@ export const login = async (req, res) => {
         const { error } = joi.object({ email, password }).validate(req.body)
         if (error)
             return badRequest(error.details[0]?.message, res)
-        const response = await services.login({ ...req.body })
+        const response = await services.loginCandidate({ ...req.body })
 
         return res.status(200).json(response)
     } catch (error) {
@@ -63,11 +62,6 @@ export const login = async (req, res) => {
 
 export const refreshToken = async (req, res) => {
     try {
-        const { error } = joi.object({ refresh_token }).validate(req.body)
-
-        if (error)
-            return badRequest(error.details[0]?.message, res)
-
         const response = await services.refreshToken(req.body.refresh_token);
 
         return res.status(200).json(response)
@@ -117,7 +111,6 @@ export const googleCallback = async (req, res) => {
         return res.status(500).json({ err: 1, mes: 'Internal Server Error' });
     }
 };
-
 
 export const logout = async (req, res) => {
     try {

@@ -23,14 +23,8 @@ export default (sequelize) => {
                 allowNull: false,
             },
             type: {
-                type: DataTypes.STRING(100),
+                type: DataTypes.ENUM("Business License", "ISO Certificate", "Other"),
                 allowNull: false,
-                comment: "Loại giấy tờ, ví dụ: Giấy phép kinh doanh, Chứng nhận ISO…",
-            },
-            number: {
-                type: DataTypes.STRING(100),
-                allowNull: true,
-                comment: "Số giấy tờ hoặc mã định danh",
             },
             issue_date: {
                 type: DataTypes.DATEONLY,
@@ -43,7 +37,6 @@ export default (sequelize) => {
             file_url: {
                 type: DataTypes.STRING(255),
                 allowNull: true,
-                comment: "URL file giấy tờ",
             },
         },
         {

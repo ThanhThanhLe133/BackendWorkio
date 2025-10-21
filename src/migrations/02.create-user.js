@@ -32,10 +32,6 @@ export async function up(queryInterface, Sequelize) {
       defaultValue:
         "https://ngjrnpiopnjfcwyifslo.supabase.co/storage/v1/object/public/avatar/user.png",
     },
-    supabase_id: {
-      type: Sequelize.STRING,
-      allowNull: true,
-    },
     role_id: {
       type: Sequelize.UUID,
       allowNull: false,

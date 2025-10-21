@@ -21,20 +21,8 @@ export default (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: true,
             },
-            experience_years: {
-                type: DataTypes.INTEGER,
-                allowNull: true,
-            },
-            skills: {
-                type: DataTypes.JSONB,
-                allowNull: true,
-            },
             gender: {
                 type: DataTypes.ENUM("Male", "Female", "Other"),
-                allowNull: true,
-            },
-            address: {
-                type: DataTypes.STRING,
                 allowNull: true,
             },
             dob: {

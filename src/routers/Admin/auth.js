@@ -3,12 +3,7 @@ import express from 'express'
 import { verifyToken } from "../../middleWares/verify_token.js";
 
 const router = express.Router()
-router.post('/register', controllers.registerCandidate)
-router.get('/verified', controllers.verifiedCallBackCandidate)
-router.post('/login', controllers.loginCandidate)
-router.get('/google-login', controllers.googleLogin)
-router.get('/google-callback', controllers.googleCallback)
-
+router.post('/login', controllers.loginAdmin)
 router.use(verifyToken);
 router.post('/refresh-token', controllers.refreshToken)
 router.post('/logout', controllers.logout)

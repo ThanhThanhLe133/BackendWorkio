@@ -7,10 +7,9 @@ export default (sequelize) => {
                 foreignKey: "recruiter_id",
                 as: "user",
             });
-
-            Recruiter.belongsTo(models.Field, {
-                foreignKey: "field_id",
-                as: "field",
+            Recruiter.belongsTo(models.Address, {
+                foreignKey: 'address_id',
+                as: 'address',
             });
         }
     }
@@ -26,17 +25,14 @@ export default (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: true,
             },
-            address: {
-                type: DataTypes.STRING,
+            address_id: {
+                type: DataTypes.UUID,
                 allowNull: true,
-            },
-            field_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
             },
             description: {
                 type: DataTypes.TEXT,
                 allowNull: true,
+                defaultValue: ""
             },
             tax_number: {
                 type: DataTypes.STRING(50),
@@ -46,14 +42,12 @@ export default (sequelize) => {
             phone: {
                 type: DataTypes.STRING(20),
                 allowNull: true,
-            },
-            email_contact: {
-                type: DataTypes.STRING(100),
-                allowNull: true,
+                defaultValue: ""
             },
             website: {
                 type: DataTypes.STRING(255),
                 allowNull: true,
+                defaultValue: ""
             },
             established_at: {
                 type: DataTypes.DATEONLY,

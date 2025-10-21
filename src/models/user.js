@@ -57,10 +57,6 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
-      supabase_id: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
       role_id: {
         type: DataTypes.UUID,
         allowNull: false,
