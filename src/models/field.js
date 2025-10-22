@@ -3,10 +3,6 @@ import { Model, DataTypes } from "sequelize";
 export default (sequelize) => {
     class Field extends Model {
         static associate(models) {
-            Field.hasMany(models.Recruiter, {
-                foreignKey: "field_id",
-                as: "recruiters",
-            });
         }
     }
 

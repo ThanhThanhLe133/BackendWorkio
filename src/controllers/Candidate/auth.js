@@ -128,3 +128,53 @@ export const logout = async (req, res) => {
         return internalServerError(res)
     }
 };
+
+export const forgotPasswordCandidate = async (req, res) => {
+    try {
+        const schema = joi.object({ email });
+        const { error } = schema.validate(req.body);
+        if (error)
+            return badRequest(error.details[0]?.message, res);
+
+        const response = await services.forgotPasswordCandidate(req.body)
+
+        return res.status(200).json(response)
+    } catch (error) {
+        return internalServerError(res)
+    }
+}
+
+export const resetPasswordCandidate = async (req, res) => {
+    try {
+        const { token } = req.query;
+
+        if (!token) {
+            return res.status(400).json({ err: 1, mes: 'Missing token parameter' });
+        }
+        const schema = joi.object({ password });
+        const { error } = schema.validate(req.body);
+        if (error)
+            return badRequest(error.details[0]?.message, res)
+
+        const response = await services.resetPasswordCandidate({ ...req.body, token })
+
+        return res.status(200).json(response)
+    } catch (error) {
+        return internalServerError(res)
+    }
+}
+
+export const createNewPasswordCandidate = async (req, res) => {
+    try {
+        const schema = joi.object({ email, password });
+        const { error } = schema.validate(req.body);
+        if (error)
+            return badRequest(error.details[0]?.message, res)
+
+        const response = await services.createNewPasswordCandidate({ ...req.body })
+
+        return res.status(200).json(response)
+    } catch (error) {
+        return internalServerError(res)
+    }
+}

@@ -34,7 +34,7 @@ export default {
       },
     });
     await queryInterface.sequelize.query(`
-      ALTER TABLE "Roles" ENABLE ROW LEVEL SECURITY;
+      ALTER TABLE "Addresses" ENABLE ROW LEVEL SECURITY;
     `);
   },
 

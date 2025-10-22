@@ -64,7 +64,7 @@ export const sendEmailToRecruiter = ({ admin_id, recruiter_id }) => new Promise(
             process.env.EMAIL_VERIFY_SECRET,
             { expiresIn: "1d" }
         );
-        await sendVerificationEmail(email, token);
+        await sendVerificationEmail(email, token, 'Recruiter');
 
         resolve({
             err: 0,
