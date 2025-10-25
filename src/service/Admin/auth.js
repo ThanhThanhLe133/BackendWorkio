@@ -11,10 +11,10 @@ export const loginAdmin = ({ email, password }) =>
             const user = await db.User.findOne({
                 where: { email },
                 include: [
-                    {
-                        model: db.Candidate,
-                        as: 'admin',
-                    },
+                    // {
+                    //     model: db.Candidate,
+                    //     as: 'admin',
+                    // },
                     {
                         model: db.Role,
                         as: 'role',
