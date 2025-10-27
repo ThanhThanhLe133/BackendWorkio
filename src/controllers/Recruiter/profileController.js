@@ -3,7 +3,7 @@ import * as services from '../../service/Recruiter/profile.js';
 
 export const editProfile = async (req, res) => {
     try {
-        // 1. Lấy userId từ token (do middleware verifyToken cung cấp)
+        // 1. Lấy userId từ token 
         const userId = req.user.id;
 
         // 2. Validate dữ liệu body
@@ -15,7 +15,7 @@ export const editProfile = async (req, res) => {
             });
         }
 
-        // 3. Gọi service để xử lý logic
+        // 3. Gọi service 
         const response = await services.editRecruiterProfile({
             userId,
             payload: req.body

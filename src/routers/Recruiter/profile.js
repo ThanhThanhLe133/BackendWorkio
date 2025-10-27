@@ -13,7 +13,7 @@ const router = express.Router();
 router.patch(
     '/',
     verifyToken,
-    isRecruiter,   // Kiểm tra xem có phải Recruiter không
+    isRecruiter,   // Kiểm tra Recruiter role
     controllers.editProfile
 );
 

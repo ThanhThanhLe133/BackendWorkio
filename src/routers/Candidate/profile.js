@@ -13,7 +13,7 @@ const router = express.Router();
 router.patch(
     '/',
     verifyToken,
-    isCandidate, // Dùng middleware isCandidate
+    isCandidate,   // Kiểm tra Candidate role
     controllers.editProfile
 );
 

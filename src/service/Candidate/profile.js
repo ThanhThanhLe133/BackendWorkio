@@ -32,7 +32,7 @@ export const editCandidateProfile = ({ userId, payload }) =>
                     throw new Error('Candidate profile not found');
                 }
 
-                // 3. Cập nhật bảng Users (nếu có)
+                // 3. Cập nhật bảng Users 
                 if (Object.keys(userFields).length > 0) {
                     await db.User.update(userFields, {
                         where: { id: userId },
@@ -40,7 +40,7 @@ export const editCandidateProfile = ({ userId, payload }) =>
                     });
                 }
 
-                // 4. Cập nhật bảng Candidates (nếu có)
+                // 4. Cập nhật bảng Candidates 
                 if (Object.keys(candidateFields).length > 0) {
                     await candidate.update(candidateFields, { transaction: t });
                 }

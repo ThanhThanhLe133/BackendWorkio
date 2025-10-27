@@ -25,11 +25,8 @@ export const editRecruiterProfile = ({ userId, payload }) =>
         const { userFields, recruiterFields, addressFields } = filterFields(payload);
 
         try {
-            // 1. Bắt đầu một Transaction
             const result = await db.sequelize.transaction(async (t) => {
 
-                // 2. Tìm Recruiter và User liên quan
-                // Dùng userId (lấy từ token) để tìm recruiter_id
                 const recruiter = await db.Recruiter.findOne({
                     where: { recruiter_id: userId },
                     transaction: t
@@ -39,7 +36,7 @@ export const editRecruiterProfile = ({ userId, payload }) =>
                     throw new Error('Recruiter profile not found');
                 }
 
-                // 3. Cập nhật bảng Users (nếu có)
+                // Cập nhật bảng Users 
                 if (Object.keys(userFields).length > 0) {
                     await db.User.update(userFields, {
                         where: { id: userId },
@@ -47,12 +44,12 @@ export const editRecruiterProfile = ({ userId, payload }) =>
                     });
                 }
 
-                // 4. Cập nhật bảng Recruiters (nếu có)
+                // Cập nhật bảng Recruiters 
                 if (Object.keys(recruiterFields).length > 0) {
                     await recruiter.update(recruiterFields, { transaction: t });
                 }
 
-                // 5. Cập nhật bảng Addresses (nếu có)
+                // Cập nhật bảng Addresses
                 if (Object.keys(addressFields).length > 0 && recruiter.address_id) {
                     await db.Address.update(addressFields, {
                         where: { id: recruiter.address_id },
@@ -67,7 +64,6 @@ export const editRecruiterProfile = ({ userId, payload }) =>
 
         } catch (error) {
             console.error('Service Error:', error);
-            // Nếu có lỗi, transaction sẽ tự động rollback
             reject({ err: 2, mes: error.message || 'Error updating profile' });
         }
     });
