@@ -18,11 +18,11 @@ export const image = joi.string().required()
 export const filename = joi.array().required()
 
 export const recruiterEditProfileSchema = joi.object({
-    // Các trường từ User model
+    // User model
     name: joi.string().optional(),
     avatar_url: joi.string().uri().optional(),
 
-    // Các trường từ Recruiter model
+    // Recruiter model
     company_name: joi.string().optional(),
     description: joi.string().max(2000).optional(),
     phone: joi.string().pattern(/^[0-9]+$/).min(10).max(15).optional(),
@@ -33,4 +33,15 @@ export const recruiterEditProfileSchema = joi.object({
     province_code: joi.string().optional(),
     ward_code: joi.string().optional(),
     street: joi.string().optional(),
+});
+
+export const candidateEditProfileSchema = joi.object({
+    // Từ User model
+    name: joi.string().optional(),
+    avatar_url: joi.string().uri().optional(),
+
+    // Candidate model
+    resume_url: joi.string().uri().optional(),
+    gender: gender.optional(),
+    dob: dateOfBirth.optional()
 });

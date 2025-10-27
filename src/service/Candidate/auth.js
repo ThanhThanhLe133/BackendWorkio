@@ -125,8 +125,10 @@ export const loginCandidate = ({ email, password }) =>
             const isMatch = bcrypt.compareSync(password, user.password);
             if (!isMatch) return { err: 1, mes: 'Invalid password' };
 
+            const roleCode = user.role.value;
+
             const access_token = jwt.sign(
-                { id: user.id, email: user.email, role: user.role_id },
+                { id: user.id, email: user.email, role_code: roleCode },
                 process.env.JWT_SECRET,
                 { expiresIn: '1h' }
             );
