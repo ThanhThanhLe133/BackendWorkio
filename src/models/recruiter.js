@@ -53,10 +53,16 @@ export default (sequelize) => {
                 type: DataTypes.DATEONLY,
                 allowNull: true,
             },
-            is_verified: {
-                type: DataTypes.BOOLEAN,
-                defaultValue: false,
-                allowNull: false,
+            is_verified: { type: DataTypes.BOOLEAN, defaultValue: false },
+            status: {
+                type: DataTypes.ENUM(
+                    'Chưa xác minh',       // Not Verified
+                    'Đang xem xét',        // Under Review
+                    'Đã xác minh',         // Verified
+                    'Bị từ chối'           // Rejected
+                ),
+                allowNull: true,
+                defaultValue: 'Chưa xác minh',
             },
         },
         {

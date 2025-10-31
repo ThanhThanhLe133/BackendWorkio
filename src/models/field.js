@@ -3,6 +3,7 @@ import { Model, DataTypes } from "sequelize";
 export default (sequelize) => {
     class Field extends Model {
         static associate(models) {
+
         }
     }
 
@@ -23,7 +24,19 @@ export default (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: true,
                 validate: {
-                    isIn: [["IT", "Finance", "Marketing", "Design", "Sales", "HR", "Operations", "Support", "Legal", "R&D", "Other"]]
+                    isIn: [[
+                        "CNTT",          // IT
+                        "Tài chính",     // Finance
+                        "Marketing",
+                        "Thiết kế",      // Design
+                        "Bán hàng",      // Sales
+                        "Nhân sự",       // HR
+                        "Vận hành",      // Operations
+                        "Hỗ trợ",        // Support
+                        "Pháp lý",       // Legal
+                        "Nghiên cứu & Phát triển", // R&D
+                        "Khác"           // Other
+                    ]]
                 }
             }
         },

@@ -15,7 +15,7 @@ export async function up(queryInterface, Sequelize) {
         },
     });
     await queryInterface.sequelize.query(
-        `ALTER TABLE "Admins" ENABLE ROW LEVEL SECURITY;`
+        `ALTER TABLE "Admins" DISABLE ROW LEVEL SECURITY;`
     );
 }
 

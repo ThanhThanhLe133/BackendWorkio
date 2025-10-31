@@ -4,18 +4,30 @@
 export async function up(queryInterface, Sequelize) {
   await queryInterface.createTable('Fields', {
     id: {
-      allowNull: false,
+      type: Sequelize.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-      type: Sequelize.INTEGER,
+      allowNull: false,
     },
     name: {
       type: Sequelize.STRING(100),
       allowNull: false,
       unique: true,
     },
-    description: {
-      type: Sequelize.TEXT,
+    value: {
+      type: Sequelize.ENUM(
+        "CNTT",           // IT
+        "Tài chính",      // Finance
+        "Marketing",
+        "Thiết kế",       // Design
+        "Bán hàng",       // Sales
+        "Nhân sự",        // HR
+        "Vận hành",       // Operations
+        "Hỗ trợ",         // Support
+        "Pháp lý",        // Legal
+        "Nghiên cứu & Phát triển", // R&D
+        "Khác"            // Other
+      ),
       allowNull: true,
     },
     created_at: {
@@ -29,11 +41,13 @@ export async function up(queryInterface, Sequelize) {
       defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
     },
   });
+
   await queryInterface.sequelize.query(
-    `ALTER TABLE "Fields" ENABLE ROW LEVEL SECURITY;`
+    `ALTER TABLE "Fields" DISABLE ROW LEVEL SECURITY;`
   );
 }
 
 export async function down(queryInterface, Sequelize) {
+  await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_Fields_value";');
   await queryInterface.dropTable('Fields');
 }
