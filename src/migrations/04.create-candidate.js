@@ -33,7 +33,7 @@ export async function up(queryInterface, Sequelize) {
             type: Sequelize.UUID,
             allowNull: true,
         },
-        national_id: {
+        national: {
             type: Sequelize.STRING,
             allowNull: true,
         },
@@ -84,16 +84,6 @@ export async function up(queryInterface, Sequelize) {
         is_verified: {
             type: Sequelize.BOOLEAN,
             defaultValue: false
-        },
-        status: {
-            type: Sequelize.ENUM(
-                'Chưa xác minh',
-                'Đang xem xét',
-                'Đã xác minh',
-                'Bị từ chối'
-            ),
-            allowNull: true,
-            defaultValue: 'Chưa xác minh',
         },
         is_employed: {
             type: Sequelize.BOOLEAN,

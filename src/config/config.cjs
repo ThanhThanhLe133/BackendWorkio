@@ -2,11 +2,11 @@ require('dotenv').config();
 
 module.exports = {
   development: {
-    username: 'postgres.ngjrnpiopnjfcwyifslo',
+    username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: 'postgres',
-    host: 'aws-1-ap-southeast-1.pooler.supabase.com',
-    port: 5432,
+    database: process.env.DB_PASSWORD,
+    host: process.env.DB_NAME,
+    port: process.env.DB_PORT,
     dialect: 'postgres',
     dialectOptions: {
       ssl: {

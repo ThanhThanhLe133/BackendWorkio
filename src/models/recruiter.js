@@ -5,7 +5,8 @@ export default (sequelize) => {
         static associate(models) {
             Recruiter.belongsTo(models.User, {
                 foreignKey: "recruiter_id",
-                as: "user",
+                targetKey: 'id',
+                as: "recruiter",
             });
             Recruiter.belongsTo(models.Address, {
                 foreignKey: 'address_id',
@@ -53,16 +54,9 @@ export default (sequelize) => {
                 type: DataTypes.DATEONLY,
                 allowNull: true,
             },
-            is_verified: { type: DataTypes.BOOLEAN, defaultValue: false },
-            status: {
-                type: DataTypes.ENUM(
-                    'Chưa xác minh',       // Not Verified
-                    'Đang xem xét',        // Under Review
-                    'Đã xác minh',         // Verified
-                    'Bị từ chối'           // Rejected
-                ),
-                allowNull: true,
-                defaultValue: 'Chưa xác minh',
+            is_verified: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false
             },
         },
         {

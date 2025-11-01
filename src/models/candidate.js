@@ -4,8 +4,9 @@ export default (sequelize) => {
     class Candidate extends Model {
         static associate(models) {
             Candidate.belongsTo(models.User, {
-                foreignKey: "user_id",
-                as: "user",
+                foreignKey: "candidate_id",
+                targetKey: 'id',
+                as: "candidate",
             });
 
             Candidate.belongsTo(models.Address, {
@@ -59,7 +60,7 @@ export default (sequelize) => {
                 type: DataTypes.UUID,
                 allowNull: true,
             },
-            national_id: {
+            national: {
                 type: DataTypes.STRING,
                 allowNull: true,
             },
@@ -107,16 +108,9 @@ export default (sequelize) => {
                 type: DataTypes.DECIMAL(12, 2),
                 allowNull: true,
             },
-            is_verified: { type: DataTypes.BOOLEAN, defaultValue: false },
-            status: {
-                type: DataTypes.ENUM(
-                    'Chưa xác minh',       // Not Verified
-                    'Đang xem xét',        // Under Review
-                    'Đã xác minh',     // Verified    
-                    'Bị từ chối'           // Rejected
-                ),
-                allowNull: true,
-                defaultValue: 'Chưa xác minh',
+            is_verified: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false
             },
             is_employed: {
                 type: DataTypes.BOOLEAN,
