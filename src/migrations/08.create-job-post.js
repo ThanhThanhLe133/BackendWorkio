@@ -71,10 +71,7 @@ export default {
             applied_candidates: {
                 type: Sequelize.JSON,
                 allowNull: true,
-            },
-            job_candidates: {
-                type: Sequelize.JSON,
-                allowNull: true,
+                defaultValue: [],
             },
             graduation_rank: {
                 type: Sequelize.ENUM('Cấp 1', 'Cấp 2', 'Cấp 3', 'Đại học'),
@@ -100,7 +97,6 @@ export default {
                 type: Sequelize.ENUM(
                     'Đang mở',
                     'Đang xem xét',
-                    'Đã phỏng vấn',
                     'Đã tuyển',
                     'Đã hủy'
                 ),

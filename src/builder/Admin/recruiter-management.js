@@ -34,6 +34,15 @@ export class RecruiterManagement {
         return this;
     }
 
+    async getAllRecruiters() {
+        const recruiters = await this.repo.getAll();
+        return {
+            err: 0,
+            mes: 'Lấy danh sách nhà tuyển dụng thành công',
+            data: recruiters.isEmpty ? [] : recruiters
+        };
+    }
+
     async createUser(transaction) {
         const existingUser = await this.userRepo.getByEmail(this.userData.email);
         if (existingUser)

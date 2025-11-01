@@ -1,6 +1,16 @@
 import db from "../models/index.js";
 
 class CandidateRepository {
+    async getAll() {
+        return db.Candidate.findAll({
+            include:
+            {
+                model: db.User,
+                as: 'user',
+            },
+        });
+    }
+
     async getByEmail(email) {
 
         return db.User.findOne({

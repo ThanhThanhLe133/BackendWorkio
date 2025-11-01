@@ -49,6 +49,15 @@ export class CandidateManagement {
         return this;
     }
 
+    async getAllCandidates() {
+        const candidates = await this.candidateRepo.getAll();
+        return {
+            err: 0,
+            mes: 'Lấy danh sách ứng viên thành công',
+            data: candidates.isEmpty ? [] : candidates
+        };
+    }
+
     async createUser(transaction) {
         const existingUser = await this.userRepo.getByEmail(this.userData.email);
         if (existingUser)

@@ -21,7 +21,7 @@ export const loginRecruiter = ({ email, password }) =>
                 .setPassword(password)
 
             const result = await builder.loginRecruiter();
-            resolve(result);;
+            resolve(result);
         } catch (error) {
             console.error('Login error:', error);
             resolve({ err: 1, mes: error.message });

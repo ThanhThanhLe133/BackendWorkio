@@ -2,6 +2,7 @@ import * as services from '../../service/index.js'
 import { internalServerError, badRequest } from '../../middleWares/handle_error.js'
 import { email, password } from '../../helpers/joi_schema.js'
 import joi from 'joi'
+import { getAdminId } from '../../helpers/check_user.js'
 
 export const loginAdmin = async (req, res) => {
     try {

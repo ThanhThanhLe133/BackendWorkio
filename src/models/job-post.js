@@ -83,12 +83,8 @@ export default (sequelize) => {
             applied_candidates: {
                 type: DataTypes.JSON,
                 allowNull: true,
+                defaultValue: [],
             },
-            job_candidates: {
-                type: DataTypes.JSON,
-                allowNull: true,
-            },
-
             graduation_rank: {
                 type: DataTypes.ENUM('Cấp 1', 'Cấp 2', 'Cấp 3', 'Đại học'),
                 allowNull: true,
@@ -117,7 +113,6 @@ export default (sequelize) => {
                 type: DataTypes.ENUM(
                     'Đang mở',       // Open / Active
                     'Đang xem xét',  // Under Review
-                    'Đã phỏng vấn',  // Interview
                     'Đã tuyển',      // Accepted / Filled
                     'Đã hủy'         // Cancelled / Rejected
                 ),
