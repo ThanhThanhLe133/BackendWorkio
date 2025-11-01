@@ -17,6 +17,9 @@ export const loginAdmin = async (req, res) => {
             return badRequest(error.details[0]?.message, res)
         const response = await services.loginAdmin({ ...req.body })
 
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
         return res.status(200).json(response)
     } catch (error) {
         console.log(error);
@@ -33,6 +36,9 @@ export const forgotPasswordAdmin = async (req, res) => {
 
         const response = await services.forgotPasswordAdmin(req.body)
 
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
         return res.status(200).json(response)
     } catch (error) {
         return internalServerError(res)
@@ -53,6 +59,9 @@ export const resetPasswordAdmin = async (req, res) => {
 
         const response = await services.resetPasswordAdmin({ ...req.body, token })
 
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
         return res.status(200).json(response)
     } catch (error) {
         return internalServerError(res)
@@ -68,8 +77,31 @@ export const createNewPasswordAdmin = async (req, res) => {
 
         const response = await services.createNewPasswordAdmin({ ...req.body })
 
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
         return res.status(200).json(response)
     } catch (error) {
         return internalServerError(res)
     }
 }
+
+export const logoutAdmin = async (req, res) => {
+    try {
+        const user_id = req.user?.id;
+
+        if (!user_id) return badRequest('Missing user id', res);
+
+        const response = await services.logoutAdmin({ user_id });
+        if (response.err !== 0) {
+            return res.status(401).json(response);
+        }
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error('Logout controller error:', error);
+        return internalServerError(res);
+    }
+};

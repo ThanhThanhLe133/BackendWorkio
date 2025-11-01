@@ -6,12 +6,12 @@ export default (sequelize) => {
             Admin.belongsTo(models.User, {
                 foreignKey: 'admin_id',
                 targetKey: 'id',
-                as: 'user'
+                as: 'admin'
             });
         }
     }
     Admin.init({
-        support_id: {
+        admin_id: {
             allowNull: false,
             type: DataTypes.UUID,
             primaryKey: true,

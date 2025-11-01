@@ -3,7 +3,7 @@ import { internalServerError, badRequest } from '../../middleWares/handle_error.
 import { email, password } from '../../helpers/joi_schema.js'
 import joi from 'joi'
 
-export const accountAdmin = async (req, res) => {
+export const createCandidate = async (req, res) => {
     try {
         const { error } = joi.object({ email, password }).validate({
             email: req.body.email,
@@ -13,7 +13,7 @@ export const accountAdmin = async (req, res) => {
         if (error)
             return badRequest(error.details[0]?.message, res)
 
-        const response = await services.accountAdmin(req.body)
+        const response = await services.createCandidate({ ...req.body })
 
         if (response.err === 1) {
             return res.status(400).json(response);

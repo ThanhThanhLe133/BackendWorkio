@@ -4,7 +4,8 @@ import authRecruiter from './Recruiter/auth.js'
 
 import authAdmin from './Admin/auth.js'
 import createAdmin from './Admin/create-admin.js'
-import verifyRecruiter from './Admin/verify-recruiter.js'
+import candidateAdmin from './Admin/candidate-management.js'
+import recruiterAdmin from './Admin/recruiter-management.js'
 import { notFound } from '../middleWares/handle_error.js'
 
 const initRoutes = (app) => {
@@ -13,9 +14,10 @@ const initRoutes = (app) => {
 
     app.use('/recruiter/auth', authRecruiter)
 
-    app.use('/admin/create', createAdmin)
+    app.use('/admin', createAdmin)
+    app.use('/admin', candidateAdmin)
+    app.use('/admin', recruiterAdmin)
     app.use('/admin/auth', authAdmin)
-    app.use('/admin', verifyRecruiter)
 
     // app.use('/', notFound)
 }

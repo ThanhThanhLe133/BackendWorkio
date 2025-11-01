@@ -1,180 +1,53 @@
-import db from '../../models/index.js'
-import bcrypt from "bcryptjs"
-import jwt from 'jsonwebtoken'
-import dotenv from "dotenv";
-import { hashPassword, sendResetPasswordEmail } from '../../helpers/fn.js';
-dotenv.config();
+import { AdminAuthBuilder } from '../../builder/index.js'
 
 export const loginAdmin = ({ email, password }) =>
     new Promise(async (resolve, reject) => {
         try {
-            const user = await db.User.findOne({
-                where: { email },
-                include: [
-                    {
-                        model: db.Candidate,
-                        as: 'admin',
-                    },
-                    {
-                        model: db.Role,
-                        as: 'role',
-                        attributes: ['value'],
-                    },
-                ],
-            });
-
-            if (!user) return { err: 1, mes: 'User not found' };
-
-            if (!user.role || user.role.value !== 'Admin') {
-                return resolve({
-                    err: 1,
-                    mes: 'You do not have permission to log in as admin',
-                });
-            }
-
-            const isMatch = bcrypt.compareSync(password, user.password);
-            if (!isMatch) return { err: 1, mes: 'Invalid password' };
-
-            const access_token = jwt.sign(
-                { id: user.id, email: user.email, role: user.role_id },
-                process.env.JWT_SECRET,
-                { expiresIn: '1h' }
-            );
-
-            const refresh_token = jwt.sign(
-                { id: user.id },
-                process.env.JWT_SECRET_REFRESH,
-                { expiresIn: '7d' }
-            );
-
-            await user.update({ refresh_token });
-
-            resolve({
-                err: 0,
-                mes: 'Login successfully',
-                access_token: `Bearer ${access_token}`,
-                refresh_token,
-                data: user,
-            });
+            const builder = new AdminAuthBuilder()
+                .setEmail(email)
+                .setPassword(password)
+            const result = await builder.loginAdmin();
+            resolve(result);;
         } catch (error) {
-            console.error('Login error:', error);
-            reject(error);
+            resolve({ err: 1, mes: error.message });
         }
     });
 
-export const forgotPasswordAdmin = async ({ email }) => {
+export const forgotPasswordAdmin = async ({ email }) => new Promise(async (resolve, reject) => {
     try {
-        const user = await db.User.findOne({
-            where: { email }, include: [
-                {
-                    model: db.Role,
-                    as: 'role',
-                    attributes: ['value'],
-                },
-            ],
-        });
-        if (!user) {
-            return { err: 1, mes: 'Email not found in system' };
-        }
-        if (!user.role || user.role.value !== 'Admin') {
-            return {
-                err: 1,
-                mes: 'You do not have permission to access this as admin',
-            };
-        }
-        const token = jwt.sign(
-            { email },
-            process.env.RESET_PASSWORD_SECRET,
-            { expiresIn: '1h' }
-        );
-        await sendResetPasswordEmail(email, token, 'Admin');
+        const builder = new AdminAuthBuilder()
+            .setEmail({ email })
 
-        return {
-            err: 0,
-            mes: 'Password reset link sent to your email. Please check your inbox.',
-        };
+        const result = await builder.forgotPasswordAdmin();
+        resolve(result);;
     } catch (error) {
-        console.error('Forgot password error:', error);
-        return { err: 1, mes: 'Internal Server Error' };
+        resolve({ err: 1, mes: error.message });
     }
-};
+});
 
-export const resetPasswordAdmin = async ({ token }) => {
+
+export const createNewPasswordAdmin = async ({ email, password }) => new Promise(async (resolve, reject) => {
     try {
-        if (!token) {
-            return { err: 1, mes: 'Missing token' };
-        }
+        const builder = new AdminAuthBuilder()
+            .setEmail({ email })
+            .setPassword({ password })
 
-        const decoded = jwt.verify(token, process.env.RESET_PASSWORD_SECRET);
-        const email = decoded.email;
-
-        const user = await db.User.findOne({
-            where: { email }, include: [
-                {
-                    model: db.Role,
-                    as: 'role',
-                    attributes: ['value'],
-                },
-            ],
-        });
-        if (!user) {
-            return { err: 1, mes: 'User not found' };
-        }
-        if (!user.role || user.role.value !== 'Admin') {
-            return {
-                err: 1,
-                mes: 'You do not have permission to access this as admin',
-            };
-        }
-        return {
-            err: 0,
-            mes: 'Token verified successfully',
-            email,
-        };
+        const result = await builder.createNewPassword();
+        resolve(result);;
     } catch (error) {
-        if (error.name === 'TokenExpiredError') {
-            return { err: 1, mes: 'Reset password link expired. Please request a new one.' };
-        }
-        console.error('Reset password error:', error);
-        return { err: 1, mes: 'Invalid or expired token' };
+        resolve({ err: 1, mes: error.message });
     }
-};
+});
 
 
-export const createNewPasswordAdmin = async ({ email, password }) => {
+export const logoutAdmin = ({ user_id }) => new Promise(async (resolve, reject) => {
     try {
-        if (!email || !password) {
-            return { err: 1, mes: 'Missing email or password' };
-        }
+        const builder = new AdminAuthBuilder()
+            .setUserId(user_id)
 
-        const user = await db.User.findOne({
-            where: { email }, include: [
-                {
-                    model: db.Role,
-                    as: 'role',
-                    attributes: ['value'],
-                },
-            ],
-        });
-        if (!user) {
-            return { err: 1, mes: 'User not found' };
-        }
-        if (!user.role || user.role.value !== 'Admin') {
-            return {
-                err: 1,
-                mes: 'You do not have permission to access this as admin',
-            };
-        }
-
-        const hashedPassword = hashPassword(password);
-        await user.update({ password: hashedPassword });
-
-        return {
-            err: 0,
-            mes: 'Password has been reset successfully',
-        };
+        const result = await builder.logout();
+        resolve(result);
     } catch (error) {
-        console.error('Create new password error:', error);
-        return { err: 1, mes: 'Internal Server Error' };
+        resolve({ err: 1, mes: error.message });
     }
-};
+});
