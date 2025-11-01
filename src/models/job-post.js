@@ -22,6 +22,10 @@ export default (sequelize) => {
                 allowNull: false,
                 primaryKey: true,
             },
+            position: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
             available_quantity: {
                 type: DataTypes.INTEGER,
                 allowNull: true,

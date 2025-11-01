@@ -33,9 +33,8 @@ class InterviewRepository {
         return await db.Interview.destroy({ where: { id } });
     }
 
-    async getAll(filter = {}) {
+    async getAllInterviews() {
         return db.Interview.findAll({
-            where: filter,
             include: [
                 {
                     model: db.Candidate,
@@ -47,6 +46,40 @@ class InterviewRepository {
                 },
             ],
             order: [['scheduled_time', 'ASC']],
+        });
+    }
+
+    async getAllInterviewsOfRecruiter(recruiter_id) {
+        const interviews = await db.Interview.findAll({
+            include: [
+                {
+                    model: db.JobPost,
+                    as: 'job_post',
+                    where: { recruiter_id },
+                },
+                {
+                    model: db.Candidate,
+                    as: 'candidate'
+                }
+            ],
+            order: [['scheduled_time', 'ASC']]
+        });
+
+        return {
+            err: 0,
+            mes: "Lấy danh sách interview của recruiter thành công",
+            data: interviews
+        };
+    }
+
+
+    async getAllByCandidate(candidate_id) {
+        return db.Interview.findAll({
+            where: { candidate_id },
+            include: [
+                { model: db.Recruiter, as: 'recruiter' },
+                { model: db.JobPost, as: 'job_post' },
+            ],
         });
     }
 }

@@ -30,10 +30,11 @@ export const createJobPostRecruiter = async ({ recruiter_id, data }) => new Prom
     }
 });
 
-export const editJobPostAdmin = async ({ post_id, data }) => new Promise(async (resolve, reject) => {
+export const editJobPostAdmin = async ({ job_post_id, data }) => new Promise(async (resolve, reject) => {
     try {
         const builder = new JobPostAdminBuilder()
             .setAvailableQuantity(data.available_quantity)
+            .setPosition(data.position)
             .setRequirements(data.requirements)
             .setDuration(data.duration)
             .setMonthlySalary(data.monthly_salary)
@@ -51,17 +52,17 @@ export const editJobPostAdmin = async ({ post_id, data }) => new Promise(async (
             .setOtherRequirements(data.other_requirements)
             .setStatus(data.status);
 
-        const result = await builder.edit(post_id);
+        const result = await builder.edit(job_post_id);
         resolve(result);
     } catch (error) {
         return { err: 1, mes: error.message };
     }
 });
 
-export const deleteJobPostAdmin = async ({ post_id }) => new Promise(async (resolve, reject) => {
+export const deleteJobPostAdmin = async ({ job_post_id }) => new Promise(async (resolve, reject) => {
     try {
         const builder = new JobPostAdminBuilder();
-        const result = await builder.delete(post_id);
+        const result = await builder.delete(job_post_id);
         resolve(result);
     } catch (error) {
         return { err: 1, mes: error.message };
@@ -77,11 +78,11 @@ export const getAllJobPostsAdmin = async () => new Promise(async (resolve, rejec
         return { err: 1, mes: error.message };
     }
 });
-export const applyJobAdmin = async ({ candidate_id, post_id }) => new Promise(async (resolve, reject) => {
+export const applyJobAdmin = async ({ candidate_id, job_post_id }) => new Promise(async (resolve, reject) => {
     try {
         const builder = new JobPostAdminBuilder();
 
-        const result = await builder.apply(candidate_id, post_id);
+        const result = await builder.apply(candidate_id, job_post_id);
         resolve(result);
     } catch (error) {
         return { err: 1, mes: error.message };
@@ -99,11 +100,11 @@ export const getAllPostsOfCandidateAdmin = async ({ candidate_id }) => new Promi
     }
 });
 
-export const getAllCandidatesOfPostAdmin = async ({ post_id }) => new Promise(async (resolve, reject) => {
+export const getAllCandidatesOfPostAdmin = async ({ job_post_id }) => new Promise(async (resolve, reject) => {
     try {
         const builder = new JobPostAdminBuilder();
 
-        const result = await builder.getAllCandidatesOfPost(post_id);
+        const result = await builder.getAllCandidatesOfPost(job_post_id);
         resolve(result);
     } catch (error) {
         return { err: 1, mes: error.message };

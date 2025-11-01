@@ -24,3 +24,15 @@ export const createCandidate = ({
         }
     });
 };
+
+export const getAlCandidatesAdmin = () => new Promise(async (resolve, reject) => {
+    try {
+        const builder = new CandidateManagement()
+
+        const result = await builder.getAllCandidates();
+        resolve(result);;
+
+    } catch (error) {
+        resolve({ err: 1, mes: error.message });
+    }
+});

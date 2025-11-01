@@ -44,3 +44,20 @@ export const getAlCandidatesAdmin = async (req, res) => {
         return internalServerError(res);
     }
 }
+export const editCandidateAdmin = async (req, res) => {
+    try {
+        const admin_id = getAdminId(req, res);
+        if (!admin_id) return;
+        const { candidate_id } = req.query;
+        const data = { ...req.body };
+        const response = await services.createCandidate({ candidate_id, ...data })
+
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response)
+    } catch (error) {
+        console.log(error);
+        return internalServerError(res);
+    }
+}

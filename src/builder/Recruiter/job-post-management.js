@@ -9,6 +9,7 @@ export class JobPostRecruiterBuilder {
     }
 
     setAvailableQuantity(qty) { this.jobPost.available_quantity = qty; return this; }
+    setPosition(position) { this.jobPost.position = position; return this; }
     setRequirements(req) { this.jobPost.requirements = req; return this; }
     setDuration(duration) { this.jobPost.duration = duration; return this; }
     setMonthlySalary(salary) { this.jobPost.monthly_salary = salary; return this; }
@@ -60,7 +61,7 @@ export class JobPostRecruiterBuilder {
         await this.jobPostRepo.deleteJobPost(id);
         return {
             err: 0,
-            mes: "Xoá bài đăng thành công", id
+            mes: "Xoá bài đăng thành công"
         };
     }
 
@@ -107,8 +108,8 @@ export class JobPostRecruiterBuilder {
     }
 
 
-    async getAllCandidatesOfPost(post_id) {
-        const job_post = await this.jobPostRepo.getById(post_id);
+    async getAllCandidatesOfPost(job_post_id) {
+        const job_post = await this.jobPostRepo.getById(job_post_id);
         if (!job_post)
             throw new Error("Bài đăng không tồn tại");
 

@@ -1,10 +1,10 @@
 import { JobPostCandidateBuilder } from '../../builder/index.js';
 
-export const applyJobCandidate = async ({ candidate_id, post_id }) => new Promise(async (resolve, reject) => {
+export const applyJobCandidate = async ({ candidate_id, job_post_id }) => new Promise(async (resolve, reject) => {
     try {
         const builder = new JobPostCandidateBuilder();
 
-        const result = await builder.apply(candidate_id, post_id);
+        const result = await builder.apply(candidate_id, job_post_id);
         resolve(result);
     } catch (error) {
         console.error('Create job post error:', error);

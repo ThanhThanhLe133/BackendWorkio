@@ -59,3 +59,29 @@ export const sendResetPasswordEmail = async (email, token, role) => {
 
     await transporter.sendMail(mailOptions);
 };
+
+export const sendInterviewEmail = async (email, job_post, data) => {
+    const mailOptions = {
+        from: `"Workio" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: 'Invitation to Interview',
+        html: `
+            <h2>You are invited to an interview</h2>
+            <p>Dear ${data.candidateName || 'Candidate'},</p>
+            <p>Please join your interview at the scheduled time:</p>
+            <ul>
+                <li><strong>Date & Time:</strong> ${data.scheduled_time || 'TBD'}</li>
+                <li><strong>Position:</strong> ${job_post.position || 'TBD'}</li>
+                <li><strong>Job Post Requirements:</strong> ${job_post.requirements || 'TBD'}</li>
+                <li><strong>Location:</strong> ${data.location || 'Online / TBD'}</li>
+                <li><strong>Interview Type:</strong> ${data.interview_type || 'TBD'}</li>
+                <li><strong>Notes:</strong> ${data.notes || 'No notes provided'}</li>
+            </ul>
+            <p>Please make sure to be on time and prepared for the interview.</p>
+            <p>Best regards,<br/>Workio Team</p>
+        `,
+    };
+
+    await transporter.sendMail(mailOptions);
+};
+

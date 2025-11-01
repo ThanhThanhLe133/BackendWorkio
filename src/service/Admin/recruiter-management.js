@@ -31,15 +31,3 @@ export const getAllRecruitersAdmin = () => new Promise(async (resolve, reject) =
         resolve({ err: 1, mes: error.message });
     }
 });
-
-export const getAppliedCandidatesAdmin = () => new Promise(async (resolve, reject) => {
-    try {
-        const builder = new RecruiterManagement()
-
-        const result = await builder.getAllCandidates();
-        resolve(result);;
-
-    } catch (error) {
-        resolve({ err: 1, mes: error.message });
-    }
-});

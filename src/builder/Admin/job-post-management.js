@@ -9,6 +9,7 @@ export class JobPostAdminBuilder {
     }
     setId(id) { this.jobPost.id = id; return this; }
     setAvailableQuantity(qty) { this.jobPost.available_quantity = qty; return this; }
+    setPosition(position) { this.jobPost.position = position; return this; }
     setRequirements(req) { this.jobPost.requirements = req; return this; }
     setDuration(duration) { this.jobPost.duration = duration; return this; }
     setMonthlySalary(salary) { this.jobPost.monthly_salary = salary; return this; }
@@ -60,8 +61,8 @@ export class JobPostAdminBuilder {
         };
     }
 
-    async apply(candidate_id, post_id) {
-        const job_post = await this.jobPostRepo.getById(post_id);
+    async apply(candidate_id, job_post_id) {
+        const job_post = await this.jobPostRepo.getById(job_post_id);
         if (!job_post)
             throw new Error("Bài đăng không tồn tại");
 
@@ -108,8 +109,8 @@ export class JobPostAdminBuilder {
         };
     }
 
-    async getAllCandidatesOfPost(post_id) {
-        const job_post = await this.jobPostRepo.getById(post_id);
+    async getAllCandidatesOfPost(job_post_id) {
+        const job_post = await this.jobPostRepo.getById(job_post_id);
         if (!job_post)
             throw new Error("Bài đăng không tồn tại");
 

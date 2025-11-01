@@ -10,6 +10,10 @@ export default {
                 allowNull: false,
                 primaryKey: true,
             },
+            position: {
+                type: Sequelize.TEXT,
+                allowNull: false,
+            },
             available_quantity: {
                 type: Sequelize.INTEGER,
                 allowNull: true,

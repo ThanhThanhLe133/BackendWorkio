@@ -30,10 +30,11 @@ export const createJobPostRecruiter = async ({ recruiter_id, data }) => new Prom
     }
 });
 
-export const editJobPostRecruiter = async ({ recruiter_id, post_id, data }) => new Promise(async (resolve, reject) => {
+export const editJobPostRecruiter = async ({ recruiter_id, job_post_id, data }) => new Promise(async (resolve, reject) => {
     try {
         const builder = new JobPostRecruiterBuilder()
             .setAvailableQuantity(data.available_quantity)
+            .setPosition(data.position)
             .setRequirements(data.requirements)
             .setDuration(data.duration)
             .setMonthlySalary(data.monthly_salary)
@@ -51,7 +52,7 @@ export const editJobPostRecruiter = async ({ recruiter_id, post_id, data }) => n
             .setOtherRequirements(data.other_requirements)
             .setStatus(data.status);
 
-        const result = await builder.edit(post_id, recruiter_id);
+        const result = await builder.edit(job_post_id, recruiter_id);
         resolve(result);
     } catch (error) {
         console.error('Edit job post error:', error);
@@ -59,10 +60,10 @@ export const editJobPostRecruiter = async ({ recruiter_id, post_id, data }) => n
     }
 });
 
-export const deleteJobPostRecruiter = async ({ recruiter_id, post_id }) => new Promise(async (resolve, reject) => {
+export const deleteJobPostRecruiter = async ({ recruiter_id, job_post_id }) => new Promise(async (resolve, reject) => {
     try {
         const builder = new JobPostRecruiterBuilder();
-        const result = await builder.delete(post_id, recruiter_id);
+        const result = await builder.delete(job_post_id, recruiter_id);
         resolve(result);
     } catch (error) {
         console.error('Delete job post error:', error);
@@ -81,11 +82,11 @@ export const getAllJobPostsRecruiter = async () => new Promise(async (resolve, r
     }
 });
 
-export const getAllCandidatesOfPostRecruiter = async ({ post_id }) => new Promise(async (resolve, reject) => {
+export const getAllCandidatesOfPostRecruiter = async ({ job_post_id }) => new Promise(async (resolve, reject) => {
     try {
         const builder = new JobPostRecruiterBuilder();
 
-        const result = await builder.getAllCandidatesOfPost(post_id);
+        const result = await builder.getAllCandidatesOfPost(job_post_id);
         resolve(result);
     } catch (error) {
         return { err: 1, mes: error.message };
