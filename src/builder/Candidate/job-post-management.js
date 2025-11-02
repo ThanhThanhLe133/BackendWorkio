@@ -1,8 +1,9 @@
-import { JobPostRepository } from "../../repository/index.js";
+import { JobPostRepository, CandidateRepository } from "../../repository/index.js";
 
 export class JobPostCandidateBuilder {
     constructor() {
         this.jobPostRepo = new JobPostRepository();
+        this.candidateRepo = new CandidateRepository();
         this.jobPost = {};
         this.fields = [];
         this.applied_candidates = [];
@@ -87,6 +88,39 @@ export class JobPostCandidateBuilder {
             err: 0,
             mes: "Lấy danh sách các bài đăng ứng viên đã ứng tuyển thành công",
             data: posts
+        };
+    }
+
+    async filterJobsByFields(fields) {
+        const posts = await this.jobPostRepo.filterJobsByFields(fields);
+        return {
+            err: 0,
+            mes: "Lấy danh sách bài đăng theo ngành nghề thành công",
+            data: posts,
+        };
+    }
+
+    async suggestJobsForCandidate(candidate_id) {
+        const candidate = await this.candidateRepo.getById(candidate_id);
+        if (!candidate) throw new Error("Candidate not found");
+        const allJobPosts = await this.jobPostRepo.getOpenedJobs(candidate_id);
+
+        const scoredJobs = allJobPosts.map(jobPost => {
+            const matchScore = calculateMatchScore(jobPost, candidate);
+            return { jobPost, matchScore };
+        });
+        const sortedJobs = scoredJobs
+            .filter(item => item.matchScore > 0)
+            .sort((a, b) => b.matchScore - a.matchScore)
+            .map(item => ({
+                ...item.jobPost.toJSON(),
+                match_score: item.matchScore,
+            }));
+
+        return {
+            err: 0,
+            mes: "Gợi ý việc làm phù hợp cho ứng viên thành công",
+            data: sortedJobs,
         };
     }
 }

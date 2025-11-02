@@ -6,4 +6,6 @@ router.use(verifyTokenCandidate);
 router.post('/apply-job-post', controllers.applyJobCandidate)
 router.get('/job-posts', controllers.getAllJobPostsCandidate)
 router.get('/job-posts-of-candidate', controllers.getAllPostsOfCandidateCandidate)
+router.get('/filter-by-fields', controllers.filterJobsByFieldsCandidate)
+router.get('/suggested-jobs', controllers.suggestJobsForCandidate)
 export default router; 

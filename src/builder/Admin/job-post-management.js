@@ -121,4 +121,61 @@ export class JobPostAdminBuilder {
             data: candidates
         };
     }
+
+    async filterJobsByFields(fields) {
+        const posts = await this.jobPostRepo.filterJobsByFields(fields);
+        return {
+            err: 0,
+            mes: "Lấy danh sách bài đăng theo ngành nghề thành công",
+            data: posts,
+        };
+    }
+
+    async suggestJobsForCandidate(candidate_id) {
+        const candidate = await this.candidateRepo.getById(candidate_id);
+        if (!candidate) throw new Error("Candidate not found");
+        const allJobPosts = await this.jobPostRepo.getOpenedJobs(candidate_id);
+
+        const scoredJobs = allJobPosts.map(jobPost => {
+            const matchScore = calculateMatchScore(jobPost, candidate);
+            return { jobPost, matchScore };
+        });
+        const sortedJobs = scoredJobs
+            .filter(item => item.matchScore > 0)
+            .sort((a, b) => b.matchScore - a.matchScore)
+            .map(item => ({
+                ...item.jobPost.toJSON(),
+                match_score: item.matchScore,
+            }));
+
+        return {
+            err: 0,
+            mes: "Gợi ý việc làm phù hợp cho ứng viên thành công",
+            data: sortedJobs,
+        };
+    }
+
+    async suggestCandidatesForJob(job_post_id) {
+        const allCandidates = await this.candidateRepo.getAll();
+
+        const jobPost = await this.jobPostRepo.getById(job_post_id);
+        if (!jobPost) throw new Error("Job post not found");
+        const scoredCandidates = allCandidates.map(candidate => {
+            const matchScore = calculateMatchScore(jobPost, candidate);
+            return { candidate, matchScore };
+        });
+
+        const sortedCandidates = scoredCandidates
+            .filter(item => item.matchScore > 0)
+            .sort((a, b) => b.matchScore - a.matchScore)
+            .map(item => ({
+                ...item.candidate.toJSON(),
+                match_score: item.matchScore,
+            }));
+        return {
+            err: 0,
+            mes: "Gợi ý ứng viên phù hợp cho bài đăng thành công",
+            data: sortedCandidates,
+        };
+    }
 }

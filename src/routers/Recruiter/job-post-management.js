@@ -8,4 +8,5 @@ router.patch('/job-post', controllers.editJobPostRecruiter)
 router.delete('/job-post', controllers.deleteJobPostRecruiter)
 router.get('/job-posts', controllers.getAllJobPostsRecruiter)
 router.get('/candidates-of-job-post', controllers.getAllCandidatesOfPostRecruiter)
+router.get('/suggested-candidates', controllers.suggestCandidatesForJobRecruiter)
 export default router; 

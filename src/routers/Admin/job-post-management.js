@@ -10,4 +10,7 @@ router.delete('/job-post', controllers.deleteJobPostAdmin)
 router.get('/job-posts', controllers.getAllJobPostsAdmin)
 router.get('/candidates-of-job-post', controllers.getAllCandidatesOfPostAdmin)
 router.get('/job-posts-of-candidate', controllers.getAllPostsOfCandidateAdmin)
+router.get('/filter-by-fields', controllers.filterJobsByFieldsAdmin)
+router.get('/suggested-jobs', controllers.suggestJobsForCandidateAdmin)
+router.get('/suggested-candidates', controllers.suggestJobsForCandidateAdmin)
 export default router; 

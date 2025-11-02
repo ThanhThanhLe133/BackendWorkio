@@ -78,11 +78,29 @@ export const getAllJobPostsRecruiter = async (req, res) => {
 
 export const getAllCandidatesOfPostRecruiter = async (req, res) => {
     try {
-
         const recruiter_id = getRecruiterId(req, res);
         if (!recruiter_id) return;
         const { job_post_id } = req.query;
         const response = await services.getAllCandidatesOfPostRecruiter({ job_post_id });
+
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log(error);
+        return internalServerError(res);
+    }
+}
+
+
+export const suggestCandidatesForJobRecruiter = async (req, res) => {
+    try {
+        const recruiter_id = getRecruiterId(req, res);
+        if (!recruiter_id) return;
+
+        const { job_post_id } = req.query;
+        const response = await services.suggestCandidatesForJobRecruiter({ job_post_id });
 
         if (response.err === 1) {
             return res.status(400).json(response);

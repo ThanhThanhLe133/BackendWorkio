@@ -110,3 +110,33 @@ export const getAllCandidatesOfPostAdmin = async ({ job_post_id }) => new Promis
         return { err: 1, mes: error.message };
     }
 });
+
+export const filterJobsByFieldsAdmin = async ({ fields }) => new Promise(async (resolve, reject) => {
+    try {
+        const builder = new JobPostAdminBuilder();
+        const result = await builder.filterJobsByFields(fields);
+        resolve(result);
+    } catch (error) {
+        return { err: 1, mes: error.message };
+    }
+});
+
+export const suggestJobsForCandidateAdmin = async ({ candidate_id }) => new Promise(async (resolve, reject) => {
+    try {
+        const builder = new JobPostAdminBuilder();
+        const result = await builder.suggestJobsForCandidate(candidate_id);
+        resolve(result);
+    } catch (error) {
+        return { err: 1, mes: error.message };
+    }
+});
+
+export const suggestCandidatesForJobAdmin = async ({ job_post_id }) => new Promise(async (resolve, reject) => {
+    try {
+        const builder = new JobPostAdminBuilder();
+        const result = await builder.suggestCandidatesForJob(job_post_id);
+        resolve(result);
+    } catch (error) {
+        return { err: 1, mes: error.message };
+    }
+});

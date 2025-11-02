@@ -92,3 +92,13 @@ export const getAllCandidatesOfPostRecruiter = async ({ job_post_id }) => new Pr
         return { err: 1, mes: error.message };
     }
 });
+
+export const suggestCandidatesForJobRecruiter = async ({ job_post_id }) => new Promise(async (resolve, reject) => {
+    try {
+        const builder = new JobPostRecruiterBuilder();
+        const result = await builder.suggestCandidatesForJob(job_post_id);
+        resolve(result);
+    } catch (error) {
+        return { err: 1, mes: error.message };
+    }
+});

@@ -130,4 +130,57 @@ export const getAllCandidatesOfPostAdmin = async (req, res) => {
     }
 }
 
+export const filterJobsByFieldsAdmin = async (req, res) => {
+    try {
+        const admin_id = getAdminId(req, res);
+        if (!admin_id) return;
+
+        const fields = { ...req.body };
+        const response = await services.filterJobsByFieldsAdmin({ fields });
+
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log(error);
+        return internalServerError(res);
+    }
+}
+
+export const suggestJobsForCandidateAdmin = async (req, res) => {
+    try {
+        const admin_id = getAdminId(req, res);
+        if (!admin_id) return;
+
+        const { candidate_id } = req.query;
+        const response = await services.suggestJobsForCandidateAdmin({ candidate_id });
+
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log(error);
+        return internalServerError(res);
+    }
+}
+
+export const suggestCandidatesForJobAdmin = async (req, res) => {
+    try {
+        const admin_id = getAdminId(req, res);
+        if (!admin_id) return;
+
+        const { job_post_id } = req.query;
+        const response = await services.suggestCandidatesForJobAdmin({ job_post_id });
+
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log(error);
+        return internalServerError(res);
+    }
+}
 //end + edit candidate is_employed
