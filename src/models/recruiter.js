@@ -5,7 +5,8 @@ export default (sequelize) => {
         static associate(models) {
             Recruiter.belongsTo(models.User, {
                 foreignKey: "recruiter_id",
-                as: "user",
+                targetKey: 'id',
+                as: "recruiter",
             });
             Recruiter.belongsTo(models.Address, {
                 foreignKey: 'address_id',
@@ -55,8 +56,7 @@ export default (sequelize) => {
             },
             is_verified: {
                 type: DataTypes.BOOLEAN,
-                defaultValue: false,
-                allowNull: false,
+                defaultValue: false
             },
         },
         {

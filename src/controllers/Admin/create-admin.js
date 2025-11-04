@@ -15,10 +15,12 @@ export const accountAdmin = async (req, res) => {
 
         const response = await services.accountAdmin(req.body)
 
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
         return res.status(200).json(response)
     } catch (error) {
         console.log(error);
-
-        return internalServerError(res)
+        return internalServerError(res);
     }
 }

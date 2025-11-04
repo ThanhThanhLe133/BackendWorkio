@@ -25,7 +25,7 @@ export async function up(queryInterface, Sequelize) {
         },
     });
     await queryInterface.sequelize.query(
-        `ALTER TABLE "Roles" ENABLE ROW LEVEL SECURITY;`
+        `ALTER TABLE "Roles" DISABLE ROW LEVEL SECURITY;`
     );
 }
 

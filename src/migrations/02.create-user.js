@@ -48,7 +48,7 @@ export async function up(queryInterface, Sequelize) {
     },
   });
   await queryInterface.sequelize.query(
-    `ALTER TABLE "Users" ENABLE ROW LEVEL SECURITY;`
+    `ALTER TABLE "Users" DISABLE ROW LEVEL SECURITY;`
   );
 }
 

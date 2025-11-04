@@ -3,19 +3,6 @@ import { internalServerError, badRequest } from '../../middleWares/handle_error.
 import { email, password } from '../../helpers/joi_schema.js'
 import joi from 'joi'
 
-export const registerCandidate = async (req, res) => {
-    try {
-        const { error } = joi.object({ email, password }).validate(req.body)
-        if (error)
-            return badRequest(error.details[0]?.message, res)
-
-        const response = await services.registerCandidate(req.body)
-
-        return res.status(200).json(response)
-    } catch (error) {
-        return internalServerError(res)
-    }
-}
 
 export const verifiedCallBackCandidate = async (req, res) => {
     try {
@@ -27,14 +14,13 @@ export const verifiedCallBackCandidate = async (req, res) => {
 
         const response = await services.verifiedCallBackCandidate(token);
 
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
         return res.status(200).json(response)
-        // return res.redirect(
-        //     `${process.env.CLIENT_URL}/auth/verify-failed?reason=${encodeURIComponent(result.mes)}`
-        // );
     } catch (error) {
         console.log(error);
-
-        return internalServerError(res)
+        return internalServerError(res);
     }
 }
 
@@ -52,11 +38,13 @@ export const loginCandidate = async (req, res) => {
             return badRequest(error.details[0]?.message, res)
         const response = await services.loginCandidate({ ...req.body })
 
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
         return res.status(200).json(response)
     } catch (error) {
         console.log(error);
-
-        return internalServerError(res)
+        return internalServerError(res);
     }
 }
 
@@ -64,68 +52,33 @@ export const refreshToken = async (req, res) => {
     try {
         const response = await services.refreshToken(req.body.refresh_token);
 
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
         return res.status(200).json(response)
     } catch (error) {
         console.error('Error in refreshToken: ', error);
-        return internalServerError(res)
+        return internalServerError(res);
     }
 }
 
-export const googleLogin = async (req, res) => {
-    try {
-        const result = await services.googleLogin();
-        if (result.err) return res.status(400).json(result);
-        return res.redirect(result.data);
-
-    } catch (error) {
-        console.error('Logout controller error:', error);
-        return res.status(500).json({ err: 1, mes: 'Internal Server Error' });
-    }
-};
-
-export const googleCallback = async (req, res) => {
-    try {
-        const { code } = req.query;
-        if (!code) return res.status(400).json({ err: 1, mes: 'Missing code parameter' });
-
-        const result = await services.googleCallBack(code);
-
-        if (result.err) return res.status(500).json(result);
-
-        res.cookie('access_token', result.access_token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
-            maxAge: 60 * 60 * 1000,
-        });
-        res.cookie('refresh_token', result.refresh_token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
-
-        return res.status(200).json(result);
-    } catch (error) {
-        console.error('Google callback controller error:', error);
-        return res.status(500).json({ err: 1, mes: 'Internal Server Error' });
-    }
-};
-
-export const logout = async (req, res) => {
+export const logoutCandidate = async (req, res) => {
     try {
         const user_id = req.user?.id;
 
         if (!user_id) return badRequest('Missing user id', res);
 
-        const response = await services.logout({ user_id });
+        const response = await services.logoutCandidate({ user_id });
         if (response.err !== 0) {
             return res.status(401).json(response);
+        }
+        if (response.err === 1) {
+            return res.status(400).json(response);
         }
         return res.status(200).json(response);
     } catch (error) {
         console.error('Logout controller error:', error);
-        return internalServerError(res)
+        return internalServerError(res);
     }
 };
 
@@ -138,9 +91,12 @@ export const forgotPasswordCandidate = async (req, res) => {
 
         const response = await services.forgotPasswordCandidate(req.body)
 
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
         return res.status(200).json(response)
     } catch (error) {
-        return internalServerError(res)
+        return internalServerError(res);
     }
 }
 
@@ -158,6 +114,9 @@ export const resetPasswordCandidate = async (req, res) => {
 
         const response = await services.resetPasswordCandidate({ ...req.body, token })
 
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
         return res.status(200).json(response)
     } catch (error) {
         return internalServerError(res)
@@ -173,6 +132,9 @@ export const createNewPasswordCandidate = async (req, res) => {
 
         const response = await services.createNewPasswordCandidate({ ...req.body })
 
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
         return res.status(200).json(response)
     } catch (error) {
         return internalServerError(res)

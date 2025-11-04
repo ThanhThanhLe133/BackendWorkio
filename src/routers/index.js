@@ -1,21 +1,35 @@
 import authCandidate from './Candidate/auth.js'
+import jobPostCandidate from './Candidate/job-post-management.js'
+import interviewCandidate from './Candidate/interview.js'
 
 import authRecruiter from './Recruiter/auth.js'
+import jobPostRecruiter from './Recruiter/job-post-management.js'
+import interviewRecruiter from './Recruiter/interview.js'
 
 import authAdmin from './Admin/auth.js'
 import createAdmin from './Admin/create-admin.js'
-import verifyRecruiter from './Admin/verify-recruiter.js'
+import candidateAdmin from './Admin/candidate-management.js'
+import recruiterAdmin from './Admin/recruiter-management.js'
+import jobPostAdmin from './Admin/job-post-management.js'
+import interviewAdmin from './Admin/interview.js'
 import { notFound } from '../middleWares/handle_error.js'
 
 const initRoutes = (app) => {
 
     app.use('/candidate/auth', authCandidate)
+    app.use('/candidate', jobPostCandidate)
+    app.use('/candidate', interviewCandidate)
 
     app.use('/recruiter/auth', authRecruiter)
+    app.use('/recruiter', jobPostRecruiter)
+    app.use('/recruiter', interviewRecruiter)
 
-    app.use('/admin/create', createAdmin)
+    app.use('/admin', createAdmin)
+    app.use('/admin', candidateAdmin)
+    app.use('/admin', recruiterAdmin)
     app.use('/admin/auth', authAdmin)
-    app.use('/admin', verifyRecruiter)
+    app.use('/admin', jobPostAdmin)
+    app.use('/admin', interviewAdmin)
 
     // app.use('/', notFound)
 }
