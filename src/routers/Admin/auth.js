@@ -7,8 +7,7 @@ router.post('/login', controllers.loginAdmin)
 router.post('/forgot-password', controllers.forgotPasswordAdmin)
 router.get('/reset-password', controllers.resetPasswordAdmin)
 router.post('/create-new-password', controllers.createNewPasswordAdmin)
-router.use(verifyToken);
-router.post('/refresh-token', controllers.refreshToken)
-router.post('/logout', controllers.logoutAdmin)
+router.post('/refresh-token', verifyToken, controllers.refreshToken)
+router.post('/logout', verifyToken, controllers.logoutAdmin)
 
 export default router; 
