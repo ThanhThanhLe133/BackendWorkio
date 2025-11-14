@@ -1,5 +1,5 @@
 import db from "../models/index.js";
-import calculateMatchScore from "../helpers/fn.js";
+import { calculateMatchScore } from "../helpers/fn.js";
 class JobPostRepository {
     async getById(id) {
         return db.JobPost.findOne({
