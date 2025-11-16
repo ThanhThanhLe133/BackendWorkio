@@ -80,6 +80,47 @@ class RecruiterRepository {
         return db.Recruiter.destroy({ where: { recruiter_id } });
     }
 
+    async updateRecruiterProfile(user_id, payload) {
+        const transaction = await db.sequelize.transaction();
+        try {
+            const { recruiterInfo, addressInfo } = payload;
+
+            const recruiter = await db.Recruiter.findOne({ where: { recruiter_id: user_id } });
+            if (!recruiter) {
+                throw new Error("Recruiter not found");
+            }
+
+            // Update Recruiter
+            if (recruiterInfo) {
+                await db.Recruiter.update(recruiterInfo, {
+                    where: { recruiter_id: user_id },
+                    transaction
+                });
+            }
+
+            // Update Address
+            if (addressInfo) {
+                if (recruiter.address_id) {
+                    await db.Address.update(addressInfo, {
+                        where: { id: recruiter.address_id },
+                        transaction
+                    });
+                } else {
+                    const newAddress = await db.Address.create(addressInfo, { transaction });
+                    await db.Recruiter.update({ address_id: newAddress.id }, {
+                        where: { recruiter_id: user_id },
+                        transaction
+                    });
+                }
+            }
+
+            await transaction.commit();
+            return true;
+        } catch (error) {
+            await transaction.rollback();
+            throw error;
+        }
+    }
 }
 
 export { RecruiterRepository };

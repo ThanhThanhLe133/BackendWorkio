@@ -1,27 +1,27 @@
 {
     "development": {
         "username": "postgres.ngjrnpiopnjfcwyifslo",
-        "password": "7RVNBUr8WvgbLI2W",
+        "password": "W3sitOxATIgnnBaK",
         "database": "postgres",
-        "host": "aws-0-ap-southeast-1.pooler.supabase.com",
+        "host": "aws-1-ap-southeast-1.pooler.supabase.com",
         "port": 5432,
         "dialect": "postgres",
         "timezone": "+07:00"
     },
     "test": {
         "username": "postgres.ngjrnpiopnjfcwyifslo",
-        "password": "7RVNBUr8WvgbLI2W",
+        "password": "W3sitOxATIgnnBaK",
         "database": "postgres",
-        "host": "aws-0-ap-southeast-1.pooler.supabase.com",
+        "host": "aws-1-ap-southeast-1.pooler.supabase.com",
         "port": 5432,
         "dialect": "postgres",
         "timezone": "+07:00"
     },
     "production": {
         "username": "postgres.ngjrnpiopnjfcwyifslo",
-        "password": "7RVNBUr8WvgbLI2W",
+        "password": "W3sitOxATIgnnBaK",
         "database": "postgres",
-        "host": "aws-0-ap-southeast-1.pooler.supabase.com",
+        "host": "aws-1-ap-southeast-1.pooler.supabase.com",
         "port": 5432,
         "dialect": "postgres",
         "timezone": "+07:00"
