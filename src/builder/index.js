@@ -4,6 +4,7 @@ export * from './Admin/candidate-management.js'
 export * from './Admin/recruiter-management.js'
 export * from './Admin/job-post-management.js'
 export * from './Admin/interview.js'
+export * from './Admin/social-insurances.js'
 
 export * from './Candidate/auth.js'
 export * from './Candidate/job-post-management.js'

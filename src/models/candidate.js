@@ -25,6 +25,11 @@ export default (sequelize) => {
                 foreignKey: 'candidate_id',
                 as: 'work_experience',
             });
+            Candidate.hasMany(models.SocialInsurance, {
+                foreignKey: "identify_number",
+                sourceKey: "identify_number",
+                as: "social_insurances",
+            });
         }
     }
 
@@ -35,6 +40,11 @@ export default (sequelize) => {
                 defaultValue: DataTypes.UUIDV4,
                 allowNull: false,
                 primaryKey: true,
+            },
+            identify_number: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                unique: true
             },
             full_name: {
                 type: DataTypes.STRING,

@@ -6,6 +6,7 @@ import { getAdminId } from '../../helpers/check_user.js'
 
 export const loginAdmin = async (req, res) => {
     try {
+
         const { email, password } = req.body
         if (!email || !password) {
             return res.status(400).json({
@@ -13,6 +14,7 @@ export const loginAdmin = async (req, res) => {
                 mes: 'Missing email or password',
             })
         }
+
         const { error } = joi.object({ email, password }).validate(req.body)
         if (error)
             return badRequest(error.details[0]?.message, res)
@@ -36,29 +38,6 @@ export const forgotPasswordAdmin = async (req, res) => {
             return badRequest(error.details[0]?.message, res);
 
         const response = await services.forgotPasswordAdmin(req.body)
-
-        if (response.err === 1) {
-            return res.status(400).json(response);
-        }
-        return res.status(200).json(response)
-    } catch (error) {
-        return internalServerError(res)
-    }
-}
-
-export const resetPasswordAdmin = async (req, res) => {
-    try {
-        const { token } = req.query;
-
-        if (!token) {
-            return res.status(400).json({ err: 1, mes: 'Missing token parameter' });
-        }
-        const schema = joi.object({ password });
-        const { error } = schema.validate(req.body);
-        if (error)
-            return badRequest(error.details[0]?.message, res)
-
-        const response = await services.resetPasswordAdmin({ ...req.body, token })
 
         if (response.err === 1) {
             return res.status(400).json(response);

@@ -12,6 +12,7 @@ import candidateAdmin from './Admin/candidate-management.js'
 import recruiterAdmin from './Admin/recruiter-management.js'
 import jobPostAdmin from './Admin/job-post-management.js'
 import interviewAdmin from './Admin/interview.js'
+import socialInsurances from './Admin/social-insurances.js'
 import { notFound } from '../middleWares/handle_error.js'
 
 const initRoutes = (app) => {
@@ -27,10 +28,10 @@ const initRoutes = (app) => {
     app.use('/admin', createAdmin)
     app.use('/admin', candidateAdmin)
     app.use('/admin', recruiterAdmin)
-    app.use('/admin/auth', authAdmin)
+    app.use('/admin-auth', authAdmin)
     app.use('/admin', jobPostAdmin)
     app.use('/admin', interviewAdmin)
-
+    app.use('/admin', socialInsurances)
     // app.use('/', notFound)
 }
 

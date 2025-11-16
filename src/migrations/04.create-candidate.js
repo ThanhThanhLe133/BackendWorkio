@@ -9,6 +9,10 @@ export async function up(queryInterface, Sequelize) {
             type: Sequelize.UUID,
             defaultValue: Sequelize.literal('gen_random_uuid()'),
         },
+        identify_number: {
+            type: Sequelize.STRING,
+            allowNull: true,
+        },
         full_name: {
             type: Sequelize.STRING,
             allowNull: false,
