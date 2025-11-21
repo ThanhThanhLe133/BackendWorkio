@@ -48,7 +48,7 @@ export class RecruiterAuthBuilder {
         }
 
         await this.recruiterRepo.updateRecruiter(
-            user.recruiter.id, {
+            user.recruiter.recruiter_id, {
             is_verified: true
         });
         return { err: 0, mes: "Xác minh email thành công", user };

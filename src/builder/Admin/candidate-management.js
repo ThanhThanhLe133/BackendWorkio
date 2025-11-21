@@ -125,7 +125,7 @@ export class CandidateManagement {
 
             return {
                 err: 0,
-                mes: 'Tạo ứng viên thành công. Ứng viên vuilòng kiểm tra email để xác nhận.'
+                mes: 'Tạo ứng viên thành công. Ứng viên vui lòng kiểm tra email để xác nhận.'
             };
         } catch (error) {
             await transaction.rollback();

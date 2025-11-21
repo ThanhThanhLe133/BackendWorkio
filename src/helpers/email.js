@@ -47,15 +47,21 @@ export const sendResetPasswordEmail = async (email, token, role) => {
     }
 
     const mailOptions = {
-        from: `"Workio Confirmation" <${process.env.EMAIL_USER}>`,
+        from: `"Workio Support" <${process.env.EMAIL_USER}>`,
         to: email,
-        subject: 'Confirm your signup to continue',
+        subject: 'Reset your Workio password',
         html: `
-            <h2>Confirm your signup in Workio</h2>
-            <p>Click the link below to verify your email (valid for 1 day):</p>
-            <a href="${verifyUrl}">Verify your account</a>
-        `,
+        <h2>Reset your Workio password</h2>
+        <p>Bạn vừa yêu cầu đặt lại mật khẩu cho tài khoản Workio của mình.</p>
+        <p>Nhấn vào liên kết bên dưới để đặt lại mật khẩu (có hiệu lực trong 1 ngày):</p>
+        <a href="${verifyUrl}">Đặt lại mật khẩu</a>
+
+        <br/><br/>
+        <p>Nếu bạn không yêu cầu thao tác này, hãy bỏ qua email này.</p>
+        <p>Trân trọng,<br/>Đội ngũ Workio</p>
+    `,
     };
+
 
     await transporter.sendMail(mailOptions);
 };

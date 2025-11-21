@@ -49,7 +49,7 @@ export class CandidateAuthBuilder {
         }
 
         await this.candidateRepo.updateCandidate(
-            user.candidate.id, {
+            user.candidate.candidate_id, {
             is_verified: true
         });
         return { err: 0, mes: "Xác minh email thành công", user };

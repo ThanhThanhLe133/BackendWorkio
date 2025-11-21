@@ -7,8 +7,8 @@ router.get('/verified', controllers.verifiedCallBackCandidate)
 router.post('/login', controllers.loginCandidate)
 router.post('/forgot-password', controllers.forgotPasswordCandidate)
 router.post('/refresh-token', controllers.refreshToken)
-router.use(verifyToken);
 router.get('/reset-password', controllers.resetPasswordCandidate)
+router.use(verifyToken);
 router.post('/create-new-password', controllers.createNewPasswordCandidate)
 router.post('/logout', controllers.logoutCandidate)
 
