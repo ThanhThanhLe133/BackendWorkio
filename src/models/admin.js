@@ -8,6 +8,10 @@ export default (sequelize) => {
                 targetKey: 'id',
                 as: 'admin'
             });
+            Admin.hasMany(models.CourseEnrollment, {
+                foreignKey: 'assigned_by_admin_id',
+                as: 'enrollments'
+            });
         }
     }
     Admin.init({

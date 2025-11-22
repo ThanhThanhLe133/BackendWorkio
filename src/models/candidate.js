@@ -30,6 +30,10 @@ export default (sequelize) => {
                 sourceKey: "identify_number",
                 as: "social_insurances",
             });
+            Candidate.hasMany(models.CourseEnrollment, {
+                foreignKey: 'candidate_id',
+                as: 'enrollments'
+            });
         }
     }
 

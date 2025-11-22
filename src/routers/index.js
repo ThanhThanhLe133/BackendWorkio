@@ -16,6 +16,9 @@ import jobPostAdmin from './Admin/job-post-management.js'
 import interviewAdmin from './Admin/interview.js'
 import socialInsurances from './Admin/social-insurances.js'
 import report from './Admin/report-management.js'
+import educationCenterAdmin from './Admin/education-center-management.js'
+import trainingCourseAdmin from './Admin/training-course-management.js'
+import courseEnrollmentAdmin from './Admin/course-enrollment-management.js'
 import { notFound } from '../middleWares/handle_error.js'
 
 const initRoutes = (app) => {
@@ -38,6 +41,9 @@ const initRoutes = (app) => {
     app.use('/admin', interviewAdmin)
     app.use('/admin', socialInsurances)
     app.use('/admin', report)
+    app.use('/admin/education-centers', educationCenterAdmin)
+    app.use('/admin/training-courses', trainingCourseAdmin)
+    app.use('/admin/course-enrollments', courseEnrollmentAdmin)
     // app.use('/', notFound)
 }
 
