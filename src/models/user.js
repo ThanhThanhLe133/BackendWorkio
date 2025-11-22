@@ -25,6 +25,11 @@ export default (sequelize, DataTypes) => {
         sourceKey: "id",
         as: "recruiter",
       });
+      User.hasOne(models.Center, {
+        foreignKey: "center_id",
+        sourceKey: "id",
+        as: "center",
+      });
     }
   }
 
