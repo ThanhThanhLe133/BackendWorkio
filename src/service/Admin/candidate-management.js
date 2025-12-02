@@ -30,7 +30,7 @@ export const getAlCandidatesAdmin = () => new Promise(async (resolve, reject) =>
         const builder = new CandidateManagement()
 
         const result = await builder.getAllCandidates();
-        resolve(result);;
+        resolve(result);
 
     } catch (error) {
         resolve({ err: 1, mes: error.message });
