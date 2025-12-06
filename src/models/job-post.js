@@ -3,10 +3,7 @@ import { Model, DataTypes } from 'sequelize';
 export default (sequelize) => {
     class JobPost extends Model {
         static associate(models) {
-            JobPost.belongsTo(models.Recruiter, {
-                foreignKey: 'recruiter_id',
-                as: 'recruiter',
-            });
+            // Không có belongsTo Recruiter - recruiter_id chỉ là cột thông thường
             JobPost.hasMany(models.Interview, {
                 foreignKey: 'job_post_id',
                 as: 'job_post',
@@ -122,6 +119,11 @@ export default (sequelize) => {
                 ),
                 allowNull: true,
                 defaultValue: 'Đang mở',
+            },
+            recruiter_id: {
+                type: DataTypes.UUID,
+                allowNull: true,
+                // Không phải foreign key, chỉ lưu UUID của recruiter
             },
         },
         {

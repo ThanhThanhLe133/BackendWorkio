@@ -103,24 +103,8 @@ export class RecruiterManagement {
             });
             if (!recruiter) throw new Error('Recruiter not found');
 
-            // Delete job posts and related interviews
-            const jobPosts = await db.JobPost.findAll({
-                where: { recruiter_id },
-                transaction
-            });
-
-            console.log('Found job posts:', jobPosts.length);
-
-            for (const jobPost of jobPosts) {
-                await db.Interview.destroy({
-                    where: { job_post_id: jobPost.id },
-                    transaction
-                });
-            }
-            await db.JobPost.destroy({
-                where: { recruiter_id },
-                transaction
-            });
+            // Job posts của recruiter sẽ không bị xóa, chỉ mất liên kết với recruiter
+            // Không xóa job posts và interviews
 
             // Delete address if exists
             if (recruiter.address_id) {
