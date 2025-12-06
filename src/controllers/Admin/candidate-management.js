@@ -61,3 +61,41 @@ export const editCandidateAdmin = async (req, res) => {
         return internalServerError(res);
     }
 }
+
+export const deleteCandidateAdmin = async (req, res) => {
+    try {
+        const admin_id = getAdminId(req, res);
+        if (!admin_id) return;
+
+        const { id: candidate_id } = req.body;
+        if (!candidate_id) return badRequest('candidate_id is required in body', res);
+
+        const response = await services.deleteCandidateAdmin(candidate_id);
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response)
+    } catch (error) {
+        console.log(error);
+        return internalServerError(res);
+    }
+}
+
+export const deleteUserAdmin = async (req, res) => {
+    try {
+        const admin_id = getAdminId(req, res);
+        if (!admin_id) return;
+
+        const { id } = req.params;
+        if (!id) return badRequest('id is required', res);
+
+        const response = await services.deleteUserAdmin(id);
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response)
+    } catch (error) {
+        console.log(error);
+        return internalServerError(res);
+    }
+}

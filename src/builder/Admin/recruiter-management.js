@@ -93,4 +93,55 @@ export class RecruiterManagement {
             throw error;
         }
     }
+
+    async deleteRecruiter(recruiter_id) {
+        const transaction = await db.sequelize.transaction();
+        try {
+            const recruiter = await db.Recruiter.findOne({
+                where: { recruiter_id },
+                transaction
+            });
+            if (!recruiter) throw new Error('Recruiter not found');
+
+            // Delete job posts and related interviews
+            const jobPosts = await db.JobPost.findAll({
+                where: { recruiter_id },
+                transaction
+            });
+
+            console.log('Found job posts:', jobPosts.length);
+
+            for (const jobPost of jobPosts) {
+                await db.Interview.destroy({
+                    where: { job_post_id: jobPost.id },
+                    transaction
+                });
+            }
+            await db.JobPost.destroy({
+                where: { recruiter_id },
+                transaction
+            });
+
+            // Delete address if exists
+            if (recruiter.address_id) {
+                await db.Address.destroy({
+                    where: { id: recruiter.address_id },
+                    transaction
+                });
+            }
+
+            // Delete recruiter row
+            await this.repo.deleteRecruiter(recruiter_id, transaction);
+
+            // Delete user row
+            await this.userRepo.deleteUser(recruiter_id, transaction);
+
+            await transaction.commit();
+            return { err: 0, mes: 'Xóa nhà tuyển dụng thành công' };
+        } catch (error) {
+            console.error('Delete recruiter error:', error);
+            await transaction.rollback();
+            throw error;
+        }
+    }
 }

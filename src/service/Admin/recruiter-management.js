@@ -31,3 +31,13 @@ export const getAllRecruitersAdmin = () => new Promise(async (resolve, reject) =
         resolve({ err: 1, mes: error.message });
     }
 });
+
+export const deleteRecruiterAdmin = (recruiter_id) => new Promise(async (resolve) => {
+    try {
+        const builder = new RecruiterManagement();
+        const result = await builder.deleteRecruiter(recruiter_id);
+        resolve(result);
+    } catch (error) {
+        resolve({ err: 1, mes: error.message });
+    }
+});

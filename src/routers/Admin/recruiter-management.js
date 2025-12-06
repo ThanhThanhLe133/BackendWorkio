@@ -5,4 +5,5 @@ const router = express.Router()
 router.use(verifyTokenAdmin);
 router.post('/create-recruiter', controllers.createRecruiter)
 router.get('/recruiters', controllers.getAllRecruitersAdmin)
+router.delete('/recruiters', controllers.deleteRecruiterAdmin)
 export default router; 

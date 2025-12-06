@@ -132,4 +132,33 @@ export class CandidateManagement {
             throw error;
         }
     }
+
+    async deleteCandidate(candidate_id) {
+        const transaction = await db.sequelize.transaction();
+        try {
+            const candidate = await this.candidateRepo.getById ? this.candidateRepo.getById(candidate_id) : db.Candidate.findOne({ where: { candidate_id } });
+            if (!candidate) throw new Error('Candidate not found');
+
+            // Delete related entities first
+            await this.studyRepo.deleteByCandidate?.(candidate_id, transaction) || db.StudyHistory.destroy({ where: { candidate_id }, transaction });
+            await this.workRepo.deleteByCandidate?.(candidate_id, transaction) || db.WorkExperience.destroy({ where: { candidate_id }, transaction });
+
+            // Address may be shared; here we delete only if exists and is linked
+            if (candidate.address_id) {
+                await this.addressRepo.delete?.(candidate.address_id, transaction) || db.Address.destroy({ where: { id: candidate.address_id }, transaction });
+            }
+
+            // Delete Candidate row
+            await this.candidateRepo.deleteCandidate(candidate_id, transaction);
+
+            // Delete User row
+            await this.userRepo.deleteUser(candidate_id, transaction);
+
+            await transaction.commit();
+            return { err: 0, mes: 'Xóa ứng viên thành công' };
+        } catch (error) {
+            await transaction.rollback();
+            throw error;
+        }
+    }
 }

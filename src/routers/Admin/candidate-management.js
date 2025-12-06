@@ -6,4 +6,6 @@ const router = express.Router()
 router.use(verifyTokenAdmin);
 router.post('/create-candidate', controllers.createCandidate)
 router.get('/candidates', controllers.getAlCandidatesAdmin)
+router.delete('/candidates', controllers.deleteCandidateAdmin)
+router.delete('/users/:id', controllers.deleteUserAdmin)
 export default router; 
