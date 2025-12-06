@@ -22,6 +22,9 @@ export default (sequelize) => {
                 allowNull: false,
                 primaryKey: true,
             },
+            recruiter_id: {
+                type: DataTypes.UUID,
+            },
             position: {
                 type: DataTypes.STRING,
                 allowNull: false,

@@ -65,26 +65,21 @@ export class JobPostRecruiterBuilder {
         };
     }
 
-    async editStatus(status) {
+    async editStatus(id, recruiter_id, status) {
         const job_post = await this.jobPostRepo.getById(id);
         if (!job_post)
             throw new Error("Bài đăng không tồn tại");
-        if (job_post.recruiter_id !== recruiter_id) {
-            throw new Error("Bạn không có quyền xoá bài đăng này");
-        }
-        this.jobPost.status = status;
-        if (this.jobPost.id) {
-            await this.jobPostRepo.updateJobPost(
-                this.jobPost.id,
-                {
-                    status
 
-                });
+        if (job_post.recruiter_id !== recruiter_id) {
+            throw new Error("Bạn không có quyền cập nhật trạng thái bài đăng này");
         }
+
+        await this.jobPostRepo.updateJobPost(id, { status });
+
         return {
             err: 0,
             mes: "Cập nhật trạng thái thành công",
-            data: this.jobPost
+            data: { id, status }
         };
     }
 

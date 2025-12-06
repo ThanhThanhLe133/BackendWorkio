@@ -10,6 +10,14 @@ export default {
                 allowNull: false,
                 primaryKey: true,
             },
+            recruiter_id: {
+                type: Sequelize.UUID,
+                references: {
+                    model: 'Recruiters',
+                    key: 'recruiter_id'
+                }
+            },
+
             position: {
                 type: Sequelize.TEXT,
                 allowNull: false,
