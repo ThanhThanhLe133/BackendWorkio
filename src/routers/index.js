@@ -19,7 +19,11 @@ import interviewAdmin from './Admin/interview.js'
 import socialInsurances from './Admin/social-insurances.js'
 import report from './Admin/report-management.js'
 import profileAdmin from './Admin/profile.js'
+import requestsAdmin from './Admin/requests.js'
 import { notFound } from '../middleWares/handle_error.js'
+
+import requests from './Requests/requests.js'
+import me from './Me/me.js'
 
 const initRoutes = (app) => {
 
@@ -44,6 +48,10 @@ const initRoutes = (app) => {
     app.use('/admin', socialInsurances)
     app.use('/admin', report)
     app.use('/admin', profileAdmin)
+    app.use('/admin', requestsAdmin)
+
+    app.use('/requests', requests)
+    app.use('/me', me)
     // app.use('/', notFound)
 }
 

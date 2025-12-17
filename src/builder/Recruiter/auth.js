@@ -1,5 +1,6 @@
 import { RecruiterRepository, UserRepository } from "../../repository/index.js";
 import { hashPassword } from '../../helpers/fn.js';
+import { sendResetPasswordEmail } from "../../helpers/email.js";
 import bcrypt from "bcryptjs"
 import jwt from 'jsonwebtoken'
 import dotenv from "dotenv";
@@ -101,26 +102,31 @@ export class RecruiterAuthBuilder {
     async refreshToken() {
         if (!this.refresh_token) throw new Error("Missing refresh token");
 
-        const user = await this.authRepo.getRefreshTokenByEmail(this.refresh_token);
-        if (!user) throw new Error("Refresh Token hết hạn hoặc không hợp lệ");
+        const transaction = await db.sequelize.transaction();
 
         try {
+            const user = await this.userRepo.getByRefreshToken(this.refresh_token, transaction);
+            if (!user) throw new Error("Refresh Token hết hạn hoặc không hợp lệ");
+
             jwt.verify(this.refresh_token, process.env.JWT_SECRET_REFRESH);
-        } catch {
-            return { err: 1, mes: "Refresh token expired. Require login again." };
+
+            const new_access_token = jwt.sign(
+                { id: user.id, email: user.email, role_id: user.role_id },
+                process.env.JWT_SECRET,
+                { expiresIn: "1h" }
+            );
+
+            await transaction.commit();
+
+            return {
+                err: 0,
+                mes: "Làm mới token thành công",
+                access_token: `Bearer ${new_access_token}`,
+            };
+        } catch (error) {
+            await transaction.rollback();
+            throw error;
         }
-
-        const new_access_token = jwt.sign(
-            { id: user.id, email: user.email, role_id: user.role_id },
-            process.env.JWT_SECRET,
-            { expiresIn: "1h" }
-        );
-
-        return {
-            err: 0,
-            mes: "Làm mới token thành công",
-            access_token: `Bearer ${new_access_token}`,
-        };
     }
 
     async forgotPasswordRecruiter() {

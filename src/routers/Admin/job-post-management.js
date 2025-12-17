@@ -12,5 +12,5 @@ router.get('/candidates-of-job-post', controllers.getAllCandidatesOfPostAdmin)
 router.get('/job-posts-of-candidate', controllers.getAllPostsOfCandidateAdmin)
 router.get('/filter-by-fields', controllers.filterJobsByFieldsAdmin)
 router.get('/suggested-jobs', controllers.suggestJobsForCandidateAdmin)
-router.get('/suggested-candidates', controllers.suggestJobsForCandidateAdmin)
+router.get('/suggested-candidates', controllers.suggestCandidatesForJobAdmin)
 export default router; 

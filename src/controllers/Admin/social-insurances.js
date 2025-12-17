@@ -7,16 +7,16 @@ export const getSocialInsurances = async (req, res) => {
         const admin_id = getAdminId(req, res);
         if (!admin_id) return;
 
-        const candidate_id = req.query;
-        if (!candidate_id) {
+        const { identify_number } = req.query;
+        if (!identify_number) {
             return res.status(400).json({
                 err: 1,
-                mes: "Missing candidate_id"
+                mes: "Missing identify_number"
             });
         }
 
         const response = await services.getSocialInsurances({
-            candidate_id: candidate_id
+            identify_number
         });
 
         return res.status(200).json(response);
@@ -32,17 +32,16 @@ export const countUnemploymentBenefits = async (req, res) => {
         const admin_id = getAdminId(req, res);
         if (!admin_id) return;
 
-        const candidate_id = req.query;
-
-        if (!candidate_id) {
+        const { identify_number } = req.query;
+        if (!identify_number) {
             return res.status(400).json({
                 err: 1,
-                mes: "Missing candidate_id"
+                mes: "Missing identify_number"
             });
         }
 
         const response = await services.countUnemploymentBenefits({
-            candidate_id: candidate_id
+            identify_number
         });
 
         return res.status(200).json(response);
@@ -52,4 +51,3 @@ export const countUnemploymentBenefits = async (req, res) => {
         return internalServerError(res);
     }
 };
-

@@ -49,6 +49,23 @@ class InterviewRepository {
         });
     }
 
+    async getAllByRecruiter(recruiter_id) {
+        return db.Interview.findAll({
+            include: [
+                {
+                    model: db.JobPost,
+                    as: 'job_post',
+                    where: { recruiter_id },
+                },
+                {
+                    model: db.Candidate,
+                    as: 'candidate'
+                }
+            ],
+            order: [['scheduled_time', 'ASC']]
+        });
+    }
+
     async getAllInterviewsOfRecruiter(recruiter_id) {
         const interviews = await db.Interview.findAll({
             include: [

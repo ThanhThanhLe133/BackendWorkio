@@ -83,7 +83,12 @@ export class CandidateManagement {
 
     async createAddress(transaction) {
         if (!this.addressData) return this;
-        this.address = await this.addressRepo.create(this.addressData, transaction);
+        const normalized = {
+            street: this.addressData.street,
+            province_code: this.addressData.province_code,
+            ward_code: this.addressData.ward_code ?? this.addressData.ward,
+        };
+        this.address = await this.addressRepo.create(normalized, transaction);
         return this;
     }
 
@@ -91,6 +96,7 @@ export class CandidateManagement {
         this.candidate = await this.candidateRepo.createCandidate({
             candidate_id: this.user.id,
             address_id: this.address?.id || null,
+            email: this.user.email,
             ...this.candidateData
         }, transaction);
         return this;
@@ -98,14 +104,28 @@ export class CandidateManagement {
 
     async createStudyHistories(transaction) {
         for (const history of this.studyHistories) {
-            await this.studyRepo.create({ candidate_id: this.user.id, ...history }, transaction);
+            await this.studyRepo.create({
+                candidate_id: this.user.id,
+                school_name: history.school_name,
+                degree: history.degree,
+                field_of_study: history.field_of_study ?? history.major,
+                start_date: history.start_date ?? (history.start_year ? `${history.start_year}-01-01` : null),
+                end_date: history.end_date ?? (history.end_year ? `${history.end_year}-01-01` : null),
+            }, transaction);
         }
         return this;
     }
 
     async createWorkExperiences(transaction) {
         for (const exp of this.workExperiences) {
-            await this.workRepo.create({ candidate_id: this.user.id, ...exp }, transaction);
+            await this.workRepo.create({
+                candidate_id: this.user.id,
+                company_name: exp.company_name,
+                position: exp.position,
+                start_date: exp.start_date,
+                end_date: exp.end_date,
+                description: exp.description ?? '',
+            }, transaction);
         }
         return this;
     }

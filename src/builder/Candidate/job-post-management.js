@@ -1,4 +1,5 @@
 import { JobPostRepository, CandidateRepository } from "../../repository/index.js";
+import { calculateMatchScore } from "../../helpers/matching.js";
 
 export class JobPostCandidateBuilder {
     constructor() {
@@ -50,17 +51,19 @@ export class JobPostCandidateBuilder {
             return { err: 1, mes: "Hạn nộp đơn đã kết thúc" };
         }
 
-        if (!this.jobPost.applied_candidates) this.jobPost.applied_candidates = [];
+        const appliedCandidates = Array.isArray(job_post.applied_candidates)
+            ? job_post.applied_candidates
+            : [];
 
-        this.jobPost.applied_candidates.push(candidate_id);
-
-        if (this.jobPost.id) {
-            await this.jobPostRepo.updateJobPost(this.jobPost.id, {
-                applied_candidates: this.jobPost.applied_candidates
-            });
+        if (!appliedCandidates.includes(candidate_id)) {
+            appliedCandidates.push(candidate_id);
         }
 
-        return { err: 0, mes: "Ứng tuyển thành công", data: this.jobPost };
+        await this.jobPostRepo.updateJobPost(job_post_id, {
+            applied_candidates: appliedCandidates
+        });
+
+        return { err: 0, mes: "Ứng tuyển thành công", data: { job_post_id, candidate_id } };
     }
 
 

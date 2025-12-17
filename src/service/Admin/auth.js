@@ -16,7 +16,7 @@ export const loginAdmin = ({ email, password }) =>
 export const forgotPasswordAdmin = async ({ email }) => new Promise(async (resolve, reject) => {
     try {
         const builder = new AdminAuthBuilder()
-            .setEmail({ email })
+            .setEmail(email)
 
         const result = await builder.forgotPasswordAdmin();
         resolve(result);;
@@ -29,8 +29,8 @@ export const forgotPasswordAdmin = async ({ email }) => new Promise(async (resol
 export const createNewPasswordAdmin = async ({ email, password }) => new Promise(async (resolve, reject) => {
     try {
         const builder = new AdminAuthBuilder()
-            .setEmail({ email })
-            .setPassword({ password })
+            .setEmail(email)
+            .setNewPassword(password)
 
         const result = await builder.createNewPassword();
         resolve(result);;

@@ -61,7 +61,12 @@ export class RecruiterManagement {
 
     async createAddress(transaction) {
         if (!this.addressData) return this;
-        this.address = await this.addressRepo.create(this.addressData, transaction);
+        const normalized = {
+            street: this.addressData.street,
+            province_code: this.addressData.province_code,
+            ward_code: this.addressData.ward_code ?? this.addressData.ward,
+        };
+        this.address = await this.addressRepo.create(normalized, transaction);
         return this;
     }
 

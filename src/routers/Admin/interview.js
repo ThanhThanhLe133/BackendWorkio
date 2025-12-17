@@ -5,8 +5,7 @@ const router = express.Router()
 router.use(verifyTokenAdmin);
 router.post('/interview', controllers.createInterviewAdmin)
 router.patch('/interview', controllers.editInterviewAdmin)
-router.delete('/interview', controllers.deleteInterviewRecruiter)
+router.delete('/interview', controllers.deleteInterviewAdmin)
 router.get('/all-interviews', controllers.getAllInterviewsAdmin)
-router.get('/interviews-of-recruiter', controllers.getAllInterviewsByRecruiter)
 router.get('/interviews-of-candidate', controllers.getAllInterviewsByCandidate)
-export default router; 
+export default router;

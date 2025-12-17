@@ -64,7 +64,9 @@ export const deleteInterviewRecruiter = async (req, res) => {
 
 export const getAllInterviewsRecruiter = async (req, res) => {
     try {
-        const response = await services.getAllInterviewsRecruiter({});
+        const recruiter_id = getRecruiterId(req, res);
+        if (!recruiter_id) return;
+        const response = await services.getAllInterviewsRecruiter({ recruiter_id });
 
         if (response.err === 1) {
             return res.status(400).json(response);

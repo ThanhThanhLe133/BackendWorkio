@@ -4,7 +4,7 @@ import { sendInterviewEmail } from "../../helpers/email.js";
 export class InterviewRecruiterBuilder {
     constructor() {
         this.interviewRepo = new InterviewRepository();
-        this.interviewRepo = new JobPostRepository();
+        this.jobPostRepo = new JobPostRepository();
         this.interview = {};
     }
 
@@ -18,6 +18,8 @@ export class InterviewRecruiterBuilder {
     setScheduledTime(time) { this.interview.scheduled_time = time; return this; }
     setStatus(status) { this.interview.status = status; return this; }
     setNotes(notes) { this.interview.notes = notes; return this; }
+    setLocation(location) { this.interview.location = location; return this; }
+    setInterviewType(interview_type) { this.interview.interview_type = interview_type; return this; }
 
     async create(recruiter_id, job_post_id) {
         const job_post = await this.jobPostRepo.getById(job_post_id);

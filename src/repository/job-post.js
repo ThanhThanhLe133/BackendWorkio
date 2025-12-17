@@ -1,4 +1,5 @@
 import db from "../models/index.js";
+import { Op } from "sequelize";
 class JobPostRepository {
     async getById(id) {
         return db.JobPost.findOne({

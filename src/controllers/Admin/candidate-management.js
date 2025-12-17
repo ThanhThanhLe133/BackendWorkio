@@ -44,6 +44,63 @@ export const getAlCandidatesAdmin = async (req, res) => {
         return internalServerError(res);
     }
 }
+
+export const getCandidateAdmin = async (req, res) => {
+    try {
+        const admin_id = getAdminId(req, res);
+        if (!admin_id) return;
+
+        const { candidate_id } = req.query;
+        if (!candidate_id) return badRequest('Missing candidate_id', res);
+
+        const response = await services.getCandidateDetailAdmin(candidate_id);
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response)
+    } catch (error) {
+        console.log(error);
+        return internalServerError(res);
+    }
+}
+
+export const deleteCandidateAdmin = async (req, res) => {
+    try {
+        const admin_id = getAdminId(req, res);
+        if (!admin_id) return;
+
+        const { candidate_id } = req.query;
+        if (!candidate_id) return badRequest('Missing candidate_id', res);
+
+        const response = await services.deleteCandidateAdmin(candidate_id);
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response)
+    } catch (error) {
+        console.log(error);
+        return internalServerError(res);
+    }
+}
+
+export const updateCandidateAdmin = async (req, res) => {
+    try {
+        const admin_id = getAdminId(req, res);
+        if (!admin_id) return;
+
+        const { candidate_id } = req.query;
+        if (!candidate_id) return badRequest('Missing candidate_id', res);
+
+        const response = await services.updateCandidateAdmin(candidate_id, req.body);
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response)
+    } catch (error) {
+        console.log(error);
+        return internalServerError(res);
+    }
+}
 export const editCandidateAdmin = async (req, res) => {
     try {
         const admin_id = getAdminId(req, res);

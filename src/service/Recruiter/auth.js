@@ -62,7 +62,7 @@ export const createNewPasswordRecruiter = async ({ email, password }) => new Pro
     try {
         const builder = new RecruiterAuthBuilder()
             .setEmail(email)
-            .setPassword(password)
+            .setNewPassword(password)
 
         const result = await builder.createNewPassword();
         resolve(result);;

@@ -1,8 +1,10 @@
-import { JobPostRepository } from "../../repository/index.js";
+import { CandidateRepository, JobPostRepository } from "../../repository/index.js";
+import { calculateMatchScore } from "../../helpers/matching.js";
 
 export class JobPostRecruiterBuilder {
     constructor() {
         this.jobPostRepo = new JobPostRepository();
+        this.candidateRepo = new CandidateRepository();
         this.jobPost = {};
         this.fields = [];
         this.applied_candidates = [];

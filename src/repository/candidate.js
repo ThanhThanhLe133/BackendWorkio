@@ -11,6 +11,41 @@ class CandidateRepository {
         });
     }
 
+    async getDetailByCandidateId(candidate_id) {
+        return db.Candidate.findOne({
+            where: { candidate_id },
+            include: [
+                {
+                    model: db.User,
+                    as: 'candidate',
+                    attributes: ['id', 'email', 'name', 'avatar_url', 'role_id'],
+                },
+                {
+                    model: db.Address,
+                    as: 'address',
+                },
+                {
+                    model: db.StudyHistory,
+                    as: 'study_history',
+                },
+                {
+                    model: db.WorkExperience,
+                    as: 'work_experience',
+                },
+                {
+                    model: db.Interview,
+                    as: 'interview',
+                    include: [
+                        {
+                            model: db.JobPost,
+                            as: 'job_post',
+                        },
+                    ],
+                },
+            ],
+        });
+    }
+
     async getByEmail(email) {
 
         return db.User.findOne({

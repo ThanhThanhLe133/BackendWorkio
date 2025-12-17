@@ -6,4 +6,7 @@ const router = express.Router()
 router.use(verifyTokenAdmin);
 router.post('/create-candidate', controllers.createCandidate)
 router.get('/candidates', controllers.getAlCandidatesAdmin)
+router.get('/candidate', controllers.getCandidateAdmin)
+router.put('/candidate', controllers.updateCandidateAdmin)
+router.delete('/candidate', controllers.deleteCandidateAdmin)
 export default router; 

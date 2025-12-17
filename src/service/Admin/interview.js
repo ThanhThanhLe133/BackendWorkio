@@ -60,18 +60,7 @@ export const getAllInterviewsAdmin = async () => new Promise(async (resolve) => 
     }
 });
 
-export const getAllInterviewsByRecruiter = async ({ recruiter_id }) => new Promise(async (resolve) => {
-    try {
-        const builder = new InterviewAdminBuilder();
-        const result = await builder.getAllInterviewsOfRecruiter(recruiter_id);
-        resolve(result);
-    } catch (error) {
-        console.error('Get all interviews error:', error);
-        resolve({ err: 1, mes: error.message });
-    }
-});
-
-export const getAllInterviewsOfCandidateAdmin = async ({ candidate_id }) => new Promise(async (resolve) => {
+export const getAllInterviewsByCandidate = async ({ candidate_id }) => new Promise(async (resolve) => {
     try {
         const builder = new InterviewAdminBuilder();
         const result = await builder.getAllInterviewsOfCandidate(candidate_id);
@@ -81,3 +70,6 @@ export const getAllInterviewsOfCandidateAdmin = async ({ candidate_id }) => new 
         resolve({ err: 1, mes: error.message });
     }
 });
+
+// Backward-compatible export (older name)
+export const getAllInterviewsOfCandidateAdmin = getAllInterviewsByCandidate;

@@ -6,8 +6,10 @@ export const applyJobCandidate = async (req, res) => {
     try {
         const candidate_id = getCandidateId(req, res);
         if (!candidate_id) return;
+        const { job_post_id } = req.query;
+        if (!job_post_id) return badRequest('Missing job_post_id', res);
 
-        const response = await services.applyJobCandidate({ candidate_id });
+        const response = await services.applyJobCandidate({ candidate_id, job_post_id });
 
         if (response.err === 1) {
             return res.status(400).json(response);
@@ -53,7 +55,7 @@ export const filterJobsByFieldsCandidate = async (req, res) => {
     try {
         const candidate_id = getCandidateId(req, res);
         if (!candidate_id) return;
-        const fields = { ...req.body };
+        const { fields } = req.query;
         const response = await services.filterJobsByFieldsCandidate({ fields });
 
         if (response.err === 1) {

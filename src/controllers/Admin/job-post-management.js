@@ -30,7 +30,7 @@ export const editJobPostAdmin = async (req, res) => {
 
         const data = { ...req.body };
 
-        const response = await services.editJobPostAdmin({ recruiter_id, job_post_id, data });
+        const response = await services.editJobPostAdmin({ job_post_id, data });
 
         if (response.err === 1) {
             return res.status(400).json(response);
@@ -47,9 +47,9 @@ export const deleteJobPostAdmin = async (req, res) => {
         const admin_id = getAdminId(req, res);
         if (!admin_id) return;
 
-        const job_post_id = req.query;
+        const { job_post_id } = req.query;
 
-        const response = await services.deleteJobPostAdmin({ recruiter_id, job_post_id });
+        const response = await services.deleteJobPostAdmin({ job_post_id });
 
         if (response.err === 1) {
             return res.status(400).json(response);
@@ -135,7 +135,7 @@ export const filterJobsByFieldsAdmin = async (req, res) => {
         const admin_id = getAdminId(req, res);
         if (!admin_id) return;
 
-        const fields = { ...req.body };
+        const { fields } = req.query;
         const response = await services.filterJobsByFieldsAdmin({ fields });
 
         if (response.err === 1) {

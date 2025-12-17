@@ -57,7 +57,7 @@ export class InterviewAdminBuilder {
     }
 
     async getAllInterviews() {
-        const interviews = await this.interviewRepo.getAllInterviews(filter);
+        const interviews = await this.interviewRepo.getAllInterviews();
         return {
             err: 0,
             mes: "Lấy danh sách interview thành công",
@@ -75,19 +75,11 @@ export class InterviewAdminBuilder {
         };
     }
 
-    async getAllInterviewsOfRecruiter(recruiter_id) {
-        const interviews = await this.interviewRepo.getAllByRecruiter(recruiter_id);
-        return {
-            err: 0,
-            mes: "Lấy danh sách interview của recruiter thành công",
-            data: interviews
-        };
-    }
     async getAllInterviewsOfCandidate(candidate_id) {
-        const interviews = await this.interviewRepo.getAllByRecgetAllByCandidateruiter(candidate_id);
+        const interviews = await this.interviewRepo.getAllByCandidate(candidate_id);
         return {
             err: 0,
-            mes: "Lấy danh sách interview của recruiter thành công",
+            mes: "Lấy danh sách interview của candidate thành công",
             data: interviews
         };
     }

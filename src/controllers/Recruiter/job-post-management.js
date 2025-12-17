@@ -64,7 +64,9 @@ export const deleteJobPostRecruiter = async (req, res) => {
 
 export const getAllJobPostsRecruiter = async (req, res) => {
     try {
-        const response = await services.getAllJobPostsRecruiter({});
+        const recruiter_id = getRecruiterId(req, res);
+        if (!recruiter_id) return;
+        const response = await services.getAllJobPostsRecruiter({ recruiter_id });
 
         if (response.err === 1) {
             return res.status(400).json(response);
