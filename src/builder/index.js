@@ -15,3 +15,5 @@ export * from './Recruiter/auth.js'
 export * from './Recruiter/job-post-management.js'
 export * from './Recruiter/interview.js'
 export * from './Recruiter/profile.js'
+
+export * from './Center/auth.js'

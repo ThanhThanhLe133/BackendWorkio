@@ -17,7 +17,7 @@ export default (sequelize) => {
         },
         value: {
             allowNull: false,
-            type: DataTypes.ENUM('Admin', 'Candidate', 'Recruiter'),
+            type: DataTypes.ENUM('Admin', 'Candidate', 'Recruiter', 'Center'),
         },
     }, {
         sequelize,
