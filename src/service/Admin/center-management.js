@@ -1,4 +1,4 @@
-import { CenterRepository } from '../../repository/index.js';
+import { CenterRepository, CourseRepository } from '../../repository/index.js';
 import { UserRepository, AddressRepository } from '../../repository/index.js';
 import { hashPassword } from '../../helpers/fn.js';
 import db from '../../models/index.js';
@@ -71,6 +71,17 @@ export const createCenterAdmin = ({
         resolve({ err: 0, mes: 'Tạo trung tâm thành công' });
     } catch (error) {
         await transaction.rollback();
+        resolve({ err: 1, mes: error.message });
+    }
+});
+
+export const getCenterCoursesAdmin = (center_id) => new Promise(async (resolve) => {
+    try {
+        if (!center_id) return resolve({ err: 1, mes: 'Missing center_id' });
+        const courseRepo = new CourseRepository();
+        const courses = await courseRepo.getByCenterId(center_id);
+        resolve({ err: 0, mes: 'Lấy khóa học của trung tâm thành công', data: courses || [] });
+    } catch (error) {
         resolve({ err: 1, mes: error.message });
     }
 });

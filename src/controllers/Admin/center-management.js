@@ -52,3 +52,22 @@ export const createCenterAdmin = async (req, res) => {
         return internalServerError(res);
     }
 }
+
+export const getCenterCoursesAdmin = async (req, res) => {
+    try {
+        const admin_id = getAdminId(req, res);
+        if (!admin_id) return;
+
+        const { center_id } = req.query;
+        if (!center_id) return badRequest('Missing center_id', res);
+
+        const response = await services.getCenterCoursesAdmin(center_id);
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log(error);
+        return internalServerError(res);
+    }
+}

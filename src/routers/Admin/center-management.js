@@ -7,5 +7,6 @@ router.use(verifyTokenAdmin);
 router.get('/center', controllers.getCenterAdmin)
 router.get('/centers', controllers.getAllCentersAdmin)
 router.post('/center', controllers.createCenterAdmin)
+router.get('/center/courses', controllers.getCenterCoursesAdmin)
 
 export default router;
