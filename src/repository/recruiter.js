@@ -6,7 +6,7 @@ class RecruiterRepository {
             include:
             {
                 model: db.User,
-                as: 'user',
+                as: 'recruiter',
             },
         });
     }
