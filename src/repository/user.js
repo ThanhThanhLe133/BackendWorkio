@@ -23,8 +23,8 @@ class UserRepository {
         return db.Role.findOne({ where: { value } });
     }
 
-    async createUser(userData) {
-        return await db.User.create(userData);
+    async createUser(userData, transaction = null) {
+        return await db.User.create(userData, { transaction });
     }
 
     async updateUser(id, updateData) {

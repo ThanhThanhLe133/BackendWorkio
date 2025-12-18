@@ -53,6 +53,31 @@ export const verifyTokenRecruiter = (req, res, next) => {
     });
 };
 
+export const verifyTokenCenter = (req, res, next) => {
+
+    const token = req.headers.authorization;
+
+    if (!token) return notAuth('Require authorization!', res);
+    const access_token = token.split(' ')[1];
+
+    verify(access_token, process.env.JWT_SECRET, async (err, decoded) => {
+        if (err) {
+            if (err.name === 'TokenExpiredError') {
+                return notAuth('Access token expired', res, true);
+            }
+            return notAuth('Access token invalid', res, false);
+        }
+        const user = await findUserById(decoded.id);
+        if (!user) return notAuth('User not found', res);
+
+        if (user.role?.value !== 'Center') {
+            return notAuth('You do not have the required role to access this resource', res);
+        }
+        req.user = user;
+        next();
+    });
+};
+
 export const verifyTokenAdmin = (req, res, next) => {
 
     const token = req.headers.authorization;

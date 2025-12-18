@@ -1,24 +1,16 @@
 import * as services from '../../service/index.js'
 import { internalServerError, badRequest } from '../../middleWares/handle_error.js'
-import { email, password } from '../../helpers/joi_schema.js'
-import joi from 'joi'
 import { getAdminId } from '../../helpers/check_user.js'
 
-export const createRecruiter = async (req, res) => {
+export const getCenterAdmin = async (req, res) => {
     try {
-        const { error } = joi.object({ email, password }).validate({
-            email: req.body.email,
-            password: req.body.password
-        });
-
-        if (error)
-            return badRequest(error.details[0]?.message, res)
-
         const admin_id = getAdminId(req, res);
         if (!admin_id) return;
 
-        const response = await services.createRecruiter({ ...req.body })
+        const { center_id } = req.query;
+        if (!center_id) return badRequest('Missing center_id', res);
 
+        const response = await services.getCenterDetailAdmin(center_id);
         if (response.err === 1) {
             return res.status(400).json(response);
         }
@@ -29,13 +21,12 @@ export const createRecruiter = async (req, res) => {
     }
 }
 
-
-export const getAllRecruitersAdmin = async (req, res) => {
+export const getAllCentersAdmin = async (req, res) => {
     try {
         const admin_id = getAdminId(req, res);
         if (!admin_id) return;
 
-        const response = await services.getAllRecruitersAdmin();
+        const response = await services.getAllCentersAdmin();
         if (response.err === 1) {
             return res.status(400).json(response);
         }
@@ -46,15 +37,12 @@ export const getAllRecruitersAdmin = async (req, res) => {
     }
 }
 
-export const getRecruiterAdmin = async (req, res) => {
+export const createCenterAdmin = async (req, res) => {
     try {
         const admin_id = getAdminId(req, res);
         if (!admin_id) return;
 
-        const { recruiter_id } = req.query;
-        if (!recruiter_id) return badRequest('Missing recruiter_id', res);
-
-        const response = await services.getRecruiterDetailAdmin(recruiter_id);
+        const response = await services.createCenterAdmin(req.body);
         if (response.err === 1) {
             return res.status(400).json(response);
         }

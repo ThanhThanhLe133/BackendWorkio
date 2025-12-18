@@ -9,11 +9,13 @@ import interviewRecruiter from './Recruiter/interview.js'
 import profileRecruiter from './Recruiter/profile.js'
 
 import authCenter from './Center/auth.js'
+import centerCourses from './Center/course-management.js'
 
 import authAdmin from './Admin/auth.js'
 import createAdmin from './Admin/create-admin.js'
 import candidateAdmin from './Admin/candidate-management.js'
 import recruiterAdmin from './Admin/recruiter-management.js'
+import centerAdmin from './Admin/center-management.js'
 import jobPostAdmin from './Admin/job-post-management.js'
 import interviewAdmin from './Admin/interview.js'
 import socialInsurances from './Admin/social-insurances.js'
@@ -38,10 +40,12 @@ const initRoutes = (app) => {
     app.use('/recruiter/profile', profileRecruiter)
 
     app.use('/center/auth', authCenter)
+    app.use('/center', centerCourses)
 
     app.use('/admin', createAdmin)
     app.use('/admin', candidateAdmin)
     app.use('/admin', recruiterAdmin)
+    app.use('/admin', centerAdmin)
     app.use('/admin-auth', authAdmin)
     app.use('/admin', jobPostAdmin)
     app.use('/admin', interviewAdmin)

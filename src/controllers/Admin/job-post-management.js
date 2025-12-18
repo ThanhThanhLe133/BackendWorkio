@@ -76,6 +76,25 @@ export const getAllJobPostsAdmin = async (req, res) => {
     }
 }
 
+export const getJobPostAdmin = async (req, res) => {
+    try {
+        const admin_id = getAdminId(req, res);
+        if (!admin_id) return;
+
+        const { job_post_id } = req.query;
+        if (!job_post_id) return badRequest('Missing job_post_id', res);
+
+        const response = await services.getJobPostDetailAdmin({ job_post_id });
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log(error);
+        return internalServerError(res);
+    }
+}
+
 export const applyJobAdmin = async (req, res) => {
     try {
         const admin_id = getAdminId(req, res);

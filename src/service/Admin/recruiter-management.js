@@ -31,3 +31,14 @@ export const getAllRecruitersAdmin = () => new Promise(async (resolve, reject) =
         resolve({ err: 1, mes: error.message });
     }
 });
+
+export const getRecruiterDetailAdmin = (recruiter_id) => new Promise(async (resolve) => {
+    try {
+        const repo = new (await import('../../repository/recruiter.js')).RecruiterRepository();
+        const recruiter = await repo.getDetailById(recruiter_id);
+        if (!recruiter) return resolve({ err: 1, mes: 'Không tìm thấy nhà tuyển dụng' });
+        resolve({ err: 0, mes: 'Lấy chi tiết NTD thành công', data: recruiter });
+    } catch (error) {
+        resolve({ err: 1, mes: error.message });
+    }
+});

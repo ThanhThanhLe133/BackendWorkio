@@ -18,6 +18,22 @@ class CenterRepository {
         });
     }
 
+    async getAll() {
+        return db.Center.findAll({
+            include: [
+                {
+                    model: db.User,
+                    as: 'center',
+                    attributes: ['id', 'email', 'name', 'avatar_url', 'role_id']
+                },
+                {
+                    model: db.Address,
+                    as: 'address',
+                },
+            ],
+        });
+    }
+
     async getByRefreshToken(refresh_token) {
         return db.User.findOne({
             where: { refresh_token },
@@ -30,6 +46,22 @@ class CenterRepository {
                     model: db.Role,
                     as: "role",
                     where: { value: "Center" },
+                },
+            ],
+        });
+    }
+
+    async getCenterById(center_id) {
+        return db.Center.findOne({
+            where: { center_id },
+            include: [
+                {
+                    model: db.User,
+                    as: 'center',
+                },
+                {
+                    model: db.Address,
+                    as: 'address',
                 },
             ],
         });
@@ -55,7 +87,10 @@ class CenterRepository {
     async getRole(value = "Center") {
         return db.Role.findOne({ where: { value } });
     }
+
+    async createCenter(data, transaction = null) {
+        return db.Center.create(data, { transaction });
+    }
 }
 
 export { CenterRepository };
-

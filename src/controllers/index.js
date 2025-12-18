@@ -9,11 +9,13 @@ export * from './Recruiter/interview.js'
 export * from './Recruiter/profile.js'
 
 export * from './Center/auth.js'
+export * from './Center/course-management.js'
 
 export * from './Admin/auth.js'
 export * from './Admin/create-admin.js'
 export * from './Admin/candidate-management.js'
 export * from './Admin/recruiter-management.js'
+export * from './Admin/center-management.js'
 export * from './Admin/job-post-management.js'
 export * from './Admin/interview.js'
 export * from './Admin/social-insurances.js'

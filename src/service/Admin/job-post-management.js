@@ -78,6 +78,17 @@ export const getAllJobPostsAdmin = async () => new Promise(async (resolve, rejec
         return { err: 1, mes: error.message };
     }
 });
+
+export const getJobPostDetailAdmin = async ({ job_post_id }) => new Promise(async (resolve) => {
+    try {
+        const repo = new (await import('../../repository/job-post.js')).JobPostRepository();
+        const job = await repo.getById(job_post_id);
+        if (!job) return resolve({ err: 1, mes: 'Không tìm thấy tin tuyển dụng' });
+        resolve({ err: 0, mes: 'Lấy chi tiết tin thành công', data: job });
+    } catch (error) {
+        resolve({ err: 1, mes: error.message });
+    }
+});
 export const applyJobAdmin = async ({ candidate_id, job_post_id }) => new Promise(async (resolve, reject) => {
     try {
         const builder = new JobPostAdminBuilder();

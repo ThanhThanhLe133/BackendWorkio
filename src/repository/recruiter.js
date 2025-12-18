@@ -80,6 +80,23 @@ class RecruiterRepository {
         return db.Recruiter.destroy({ where: { recruiter_id } });
     }
 
+    async getDetailById(recruiter_id) {
+        return db.Recruiter.findOne({
+            where: { recruiter_id },
+            include: [
+                {
+                    model: db.User,
+                    as: 'recruiter',
+                    attributes: ['id', 'email', 'name', 'avatar_url', 'role_id']
+                },
+                {
+                    model: db.Address,
+                    as: 'address',
+                },
+            ],
+        });
+    }
+
     async updateRecruiterProfile(user_id, payload) {
         const transaction = await db.sequelize.transaction();
         try {

@@ -12,6 +12,10 @@ export default (sequelize) => {
                 targetKey: 'id',
                 as: 'center'
             });
+            Center.belongsTo(models.Address, {
+                foreignKey: 'address_id',
+                as: 'address'
+            });
         }
     }
 

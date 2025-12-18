@@ -17,6 +17,9 @@ export const sendVerificationEmail = async (email, token, role) => {
     }
     else if (role === 'Recruiter') {
         verifyUrl = `${process.env.CLIENT_URL}/recruiter/auth/verified?token=${token}`;
+    }
+    else if (role === 'Center') {
+        verifyUrl = `${process.env.CLIENT_URL}/center/auth/verified?token=${token}`;
     } else {
         verifyUrl = `${process.env.CLIENT_URL}/admin/auth/verified?token=${token}`;
     }
@@ -42,6 +45,9 @@ export const sendResetPasswordEmail = async (email, token, role) => {
     }
     else if (role === 'Recruiter') {
         verifyUrl = `${process.env.CLIENT_URL}/recruiter/auth/reset-password?token=${token}`;
+    }
+    else if (role === 'Center') {
+        verifyUrl = `${process.env.CLIENT_URL}/center/auth/reset-password?token=${token}`;
     } else {
         verifyUrl = `${process.env.CLIENT_URL}/admin/auth/reset-password?token=${token}`;
     }
@@ -90,4 +96,3 @@ export const sendInterviewEmail = async (email, job_post, data) => {
 
     await transporter.sendMail(mailOptions);
 };
-
