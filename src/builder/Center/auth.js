@@ -20,6 +20,12 @@ export class CenterAuthBuilder {
         if (!this.email || !this.password) throw new Error("Missing email or password");
 
         const user = await this.centerRepo.getByEmail(this.email);
+        console.log("User found:", user ? "Yes" : "No");
+        if (user) {
+            console.log("User has center:", user.center ? "Yes" : "No");
+            console.log("User role:", user.role?.value);
+        }
+        
         if (!user) throw new Error("Không tìm thấy thông tin trung tâm");
         if (!user.center) throw new Error("Không tìm thấy thông tin trung tâm");
         if (user.center.is_active === false) {

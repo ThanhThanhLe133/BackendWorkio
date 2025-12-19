@@ -1,0 +1,77 @@
+### Test Center APIs
+### Yêu cầu: Cài đặt extension "REST Client" trong VS Code
+### Sau đó click vào "Send Request" phía trên mỗi request
+
+@baseUrl = http://localhost:3000
+@centerEmail = center@example.com
+@centerPassword = 123456
+
+### 1️⃣ LOGIN CENTER
+# POST /center/auth/login
+POST {{baseUrl}}/center/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{centerEmail}}",
+  "password": "{{centerPassword}}"
+}
+
+### Lưu access_token từ response ở trên vào biến này:
+@accessToken = YOUR_ACCESS_TOKEN_HERE
+
+### ============================================
+### CÁC API CẦN AUTHENTICATION (yêu cầu login trước)
+### ============================================
+
+### 2️⃣ TẠO KHÓA HỌC MỚI
+# POST /center/courses
+POST {{baseUrl}}/center/courses
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Khóa học React Native 2025",
+  "description": "Học xây dựng ứng dụng di động với React Native",
+  "start_date": "2025-01-15",
+  "end_date": "2025-03-15"
+}
+
+### 3️⃣ LẤY DANH SÁCH KHÓA HỌC
+# GET /center/courses
+GET {{baseUrl}}/center/courses
+Authorization: Bearer {{accessToken}}
+
+### Lưu course_id từ response ở trên:
+@courseId = YOUR_COURSE_ID_HERE
+
+### 4️⃣ THÊM HỌC VIÊN VÀO KHÓA HỌC
+# POST /center/courses/:courseId/students
+POST {{baseUrl}}/center/courses/{{courseId}}/students
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "candidate_id": "CANDIDATE_UUID_HERE"
+}
+
+### 5️⃣ CẬP NHẬT TRẠNG THÁI HỌC VIÊN
+# PATCH /center/courses/:courseId/students/:candidateId
+# Trạng thái cho phép: "enrolled", "completed", "dropped"
+@candidateId = YOUR_CANDIDATE_ID_HERE
+
+PATCH {{baseUrl}}/center/courses/{{courseId}}/students/{{candidateId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "status": "enrolled"
+}
+
+### ============================================
+### HƯỚNG DẪN SỬ DỤNG:
+### ============================================
+# 1. Đảm bảo backend đang chạy (npm run node)
+# 2. Cài extension "REST Client" trong VS Code
+# 3. Tạo tài khoản center trong database trước
+# 4. Test từng API bằng cách click "Send Request"
+# 5. Copy token và ID từ response để dùng cho request tiếp theo
