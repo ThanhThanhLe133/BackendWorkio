@@ -35,8 +35,8 @@ export class CenterManagement {
         return this;
     }
 
-    async getAllCenters() {
-        const centers = await this.centerRepo.getAll();
+    async getAllCenters(filters = {}) {
+        const centers = await this.centerRepo.getAll(filters);
         return {
             err: 0,
             mes: 'Lấy danh sách trung tâm thành công',

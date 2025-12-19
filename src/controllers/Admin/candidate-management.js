@@ -34,7 +34,7 @@ export const getAlCandidatesAdmin = async (req, res) => {
         const admin_id = getAdminId(req, res);
         if (!admin_id) return;
 
-        const response = await services.getAlCandidatesAdmin();
+        const response = await services.getAlCandidatesAdmin(req.query);
         if (response.err === 1) {
             return res.status(400).json(response);
         }

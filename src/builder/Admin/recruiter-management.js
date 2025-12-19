@@ -34,8 +34,8 @@ export class RecruiterManagement {
         return this;
     }
 
-    async getAllRecruiters() {
-        const recruiters = await this.repo.getAll();
+    async getAllRecruiters(filters = {}) {
+        const recruiters = await this.repo.getAll(filters);
         return {
             err: 0,
             mes: 'Lấy danh sách nhà tuyển dụng thành công',

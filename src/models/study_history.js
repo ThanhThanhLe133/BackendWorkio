@@ -22,6 +22,25 @@ export default (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: true
             },
+            degree_level: {
+                type: DataTypes.ENUM(
+                    'Primary',
+                    'Secondary',
+                    'HighSchool',
+                    'Vocational',
+                    'Associate',
+                    'Bachelor',
+                    'Master',
+                    'Doctorate',
+                    'Certificate',
+                    'Custom'
+                ),
+                allowNull: true,
+            },
+            custom_degree_title: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
             degree: {
                 type: DataTypes.STRING,
                 allowNull: true

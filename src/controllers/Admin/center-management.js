@@ -26,7 +26,7 @@ export const getAllCentersAdmin = async (req, res) => {
         const admin_id = getAdminId(req, res);
         if (!admin_id) return;
 
-        const response = await services.getAllCentersAdmin();
+        const response = await services.getAllCentersAdmin(req.query);
         if (response.err === 1) {
             return res.status(400).json(response);
         }

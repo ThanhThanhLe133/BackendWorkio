@@ -14,10 +14,10 @@ export const getCenterDetailAdmin = (center_id) => new Promise(async (resolve) =
     }
 });
 
-export const getAllCentersAdmin = () => new Promise(async (resolve) => {
+export const getAllCentersAdmin = (filters = {}) => new Promise(async (resolve) => {
     try {
         const repo = new CenterRepository();
-        const centers = await repo.getAll();
+        const centers = await repo.getAll(filters);
         resolve({ err: 0, mes: 'Lấy danh sách trung tâm thành công', data: centers || [] });
     } catch (error) {
         resolve({ err: 1, mes: error.message });

@@ -118,6 +118,18 @@ export default (sequelize) => {
                 type: DataTypes.DECIMAL(12, 2),
                 allowNull: true,
             },
+            cv_profile: {
+                type: DataTypes.JSON,
+                allowNull: true,
+            },
+            cv_uploaded_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
+            matching_vector: {
+                type: DataTypes.JSON,
+                allowNull: true,
+            },
             is_verified: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false

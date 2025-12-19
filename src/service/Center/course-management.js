@@ -42,14 +42,18 @@ export const addStudentToCourse = ({ center_id, course_id, candidate_id }) =>
         }
     });
 
-export const updateStudentStatus = ({ center_id, course_id, candidate_id, status }) =>
+export const updateStudentStatus = ({ center_id, course_id, candidate_id, status, attendance, tuition_confirmed, signed_at, notes }) =>
     new Promise(async (resolve) => {
         try {
             const builder = new CourseManagement()
                 .setCenterId(center_id)
                 .setCourseId(course_id)
                 .setCandidateId(candidate_id)
-                .setStatus(status);
+                .setStatus(status)
+                .setAttendance(attendance)
+                .setTuitionConfirmed(tuition_confirmed)
+                .setSignedAt(signed_at)
+                .setNotes(notes);
 
             const result = await builder.updateCandidateStatus();
             resolve(result);

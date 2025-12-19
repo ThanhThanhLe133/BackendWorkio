@@ -20,11 +20,11 @@ export const createRecruiter = async ({
 });
 
 
-export const getAllRecruitersAdmin = () => new Promise(async (resolve, reject) => {
+export const getAllRecruitersAdmin = (filters = {}) => new Promise(async (resolve, reject) => {
     try {
         const builder = new RecruiterManagement()
 
-        const result = await builder.getAllRecruiters();
+        const result = await builder.getAllRecruiters(filters);
         resolve(result);;
 
     } catch (error) {

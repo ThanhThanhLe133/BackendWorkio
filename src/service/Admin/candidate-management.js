@@ -28,11 +28,11 @@ export const createCandidate = ({
     });
 };
 
-export const getAlCandidatesAdmin = () => new Promise(async (resolve, reject) => {
+export const getAlCandidatesAdmin = (filters = {}) => new Promise(async (resolve, reject) => {
     try {
         const builder = new CandidateManagement()
 
-        const result = await builder.getAllCandidates();
+        const result = await builder.getAllCandidates(filters);
         resolve(result);
 
     } catch (error) {

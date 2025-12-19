@@ -42,10 +42,11 @@ export class CourseManagement {
         return this;
     }
 
-    setStatus(status) {
-        this.status = status;
-        return this;
-    }
+    setStatus(status) { this.status = status; return this; }
+    setAttendance(attendance) { this.attendance = attendance; return this; }
+    setTuitionConfirmed(confirmed) { this.tuition_confirmed = confirmed; return this; }
+    setSignedAt(date) { this.signed_at = date; return this; }
+    setNotes(notes) { this.notes = notes; return this; }
 
     async ensureCenterActive() {
         const center = await this.centerRepo.getCenterById(this.centerId);
@@ -96,7 +97,11 @@ export class CourseManagement {
 
         candidates.push({
             candidate_id: this.candidateId,
-            status: STUDENT_STATUSES.LEARNING
+            status: STUDENT_STATUSES.LEARNING,
+            attendance: 0,
+            tuition_confirmed: false,
+            signed_at: null,
+            notes: null,
         });
 
         await this.courseRepo.updateCourse(this.courseId, { candidates });
@@ -119,6 +124,10 @@ export class CourseManagement {
         if (!ALLOWED_STATUSES.includes(this.status)) throw new Error('Trạng thái học viên không hợp lệ');
 
         target.status = this.status;
+        if (this.attendance !== undefined) target.attendance = this.attendance;
+        if (this.tuition_confirmed !== undefined) target.tuition_confirmed = this.tuition_confirmed;
+        if (this.signed_at !== undefined) target.signed_at = this.signed_at;
+        if (this.notes !== undefined) target.notes = this.notes;
         await this.courseRepo.updateCourse(this.courseId, { candidates });
 
         return {

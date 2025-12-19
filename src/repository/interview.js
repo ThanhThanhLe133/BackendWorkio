@@ -21,7 +21,12 @@ class InterviewRepository {
         return await db.Interview.create(interviewData);
     }
 
-    async updateInterview(id, updateData) {
+    async updateInterview(id, updateData, options = {}) {
+        const { allowStatusChange = false } = options;
+        if (!allowStatusChange && Object.prototype.hasOwnProperty.call(updateData, 'status')) {
+            throw new Error("Updating interview status is restricted to authorized roles");
+        }
+
         const [rowsUpdated, [updatedInterview]] = await db.Interview.update(updateData, {
             where: { id },
             returning: true,
@@ -91,22 +96,28 @@ class InterviewRepository {
 
 
     async getAllByCandidate(candidate_id) {
-        return db.Interview.findAll({
-            where: { candidate_id },
-            include: [
-                {
-                    model: db.JobPost,
-                    as: 'job_post',
-                    include: [
-                        {
-                            model: db.Recruiter,
-                            as: 'recruiter'
-                        }
-                    ]
-                },
-                { model: db.Candidate, as: 'candidate' },
-            ],
-        });
+        try {
+            return await db.Interview.findAll({
+                where: { candidate_id },
+                include: [
+                    {
+                        model: db.JobPost,
+                        as: 'job_post',
+                        include: [
+                            {
+                                model: db.Recruiter,
+                                as: 'recruiter'
+                            }
+                        ]
+                    },
+                    { model: db.Candidate, as: 'candidate' },
+                ],
+                order: [['scheduled_time', 'ASC']],
+            });
+        } catch (error) {
+            console.error('InterviewRepository.getAllByCandidate error:', error);
+            return [];
+        }
     }
 }
 

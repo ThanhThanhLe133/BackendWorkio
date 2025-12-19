@@ -66,7 +66,7 @@ export const updateStudentStatus = async (req, res) => {
         const center_id = getCenterId(req, res);
         if (!center_id) return;
 
-        const { status } = req.body;
+        const { status, attendance, tuition_confirmed, signed_at, notes } = req.body;
         const candidate_id = req.params.candidateId;
         if (!status) return badRequest('status is required', res);
         if (!ALLOWED_STUDENT_STATUSES.includes(status)) return badRequest('Invalid student status', res);
@@ -75,7 +75,11 @@ export const updateStudentStatus = async (req, res) => {
             center_id,
             course_id: req.params.courseId,
             candidate_id,
-            status
+            status,
+            attendance,
+            tuition_confirmed,
+            signed_at,
+            notes,
         });
         if (response.err === 1) {
             return res.status(400).json(response);

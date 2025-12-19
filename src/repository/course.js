@@ -35,6 +35,18 @@ class CourseRepository {
             order: [['createdAt', 'DESC']]
         });
     }
+
+    async getByCandidateId(candidate_id) {
+        const courses = await db.Course.findAll({
+            include: [{ model: db.Center, as: 'center' }],
+            order: [['start_date', 'DESC']],
+        });
+
+        return courses.filter((course) => {
+            const list = Array.isArray(course.candidates) ? course.candidates : [];
+            return list.some((item) => item.candidate_id === candidate_id);
+        });
+    }
 }
 
 export { CourseRepository };
