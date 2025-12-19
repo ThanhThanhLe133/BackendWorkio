@@ -55,9 +55,11 @@ export class JobPostCandidateBuilder {
             ? job_post.applied_candidates
             : [];
 
-        if (!appliedCandidates.includes(candidate_id)) {
-            appliedCandidates.push(candidate_id);
+        if (appliedCandidates.includes(candidate_id)) {
+            return { err: 1, mes: "Bạn đã ứng tuyển bài đăng này rồi" };
         }
+
+        appliedCandidates.push(candidate_id);
 
         await this.jobPostRepo.updateJobPost(job_post_id, {
             applied_candidates: appliedCandidates
@@ -86,7 +88,9 @@ export class JobPostCandidateBuilder {
     }
 
     async getAllPostsOfCandidate(candidate_id) {
+        console.log(candidate_id);
         const posts = await this.jobPostRepo.getAllByCandidate(candidate_id);
+        console.log(posts);
         return {
             err: 0,
             mes: "Lấy danh sách các bài đăng ứng viên đã ứng tuyển thành công",

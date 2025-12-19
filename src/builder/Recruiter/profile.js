@@ -24,6 +24,11 @@ class RecruiterProfileBuilder {
 
         return await this.recruiterRepository.updateRecruiterProfile(this.id, this.payload);
     }
+
+    async getProfile() {
+        if (!this.id) throw new Error('User ID is required');
+        return await this.recruiterRepository.getDetailById(this.id);
+    }
 }
 
 export { RecruiterProfileBuilder };

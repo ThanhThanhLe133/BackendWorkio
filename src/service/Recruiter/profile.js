@@ -16,3 +16,14 @@ export const updateRecruiterProfile = (id, payload) => new Promise(async (resolv
         reject(error);
     }
 });
+
+export const getRecruiterProfile = (recruiter_id) => new Promise(async (resolve) => {
+    try {
+        const builder = new RecruiterProfileBuilder().setId(recruiter_id);
+        const result = await builder.getProfile();
+        if (!result) return resolve({ err: 1, mes: 'Không tìm thấy nhà tuyển dụng' });
+        resolve({ err: 0, mes: 'Lấy profile thành công', data: result });
+    } catch (error) {
+        resolve({ err: 1, mes: error.message });
+    }
+});

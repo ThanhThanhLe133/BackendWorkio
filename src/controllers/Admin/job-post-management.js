@@ -9,7 +9,7 @@ export const createJobPostAdmin = async (req, res) => {
         const { recruiter_id } = req.query;
         const data = { ...req.body };
 
-        const response = await services.createJobPostRecruiter({ recruiter_id, data });
+        const response = await services.createJobPostAdmin({ recruiter_id, data });
 
         if (response.err === 1) {
             return res.status(400).json(response);

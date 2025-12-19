@@ -26,8 +26,8 @@ export const getAllJobPostsCandidate = async () => new Promise(async (resolve, r
 export const getAllPostsOfCandidateCandidate = async ({ candidate_id }) => new Promise(async (resolve, reject) => {
     try {
         const builder = new JobPostCandidateBuilder();
-
         const result = await builder.getAllPostsOfCandidate(candidate_id);
+        console.log(result);
         resolve(result);
     } catch (error) {
         return { err: 1, mes: error.message };

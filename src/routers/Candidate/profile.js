@@ -5,6 +5,7 @@ import { verifyToken } from "../../middleWares/verify_token.js";
 const router = express.Router()
 
 router.use(verifyToken);
+router.get('/', controllers.getCandidateProfile)
 router.put('/', controllers.updateCandidateProfile)
 
-export default router;
+export default router; 

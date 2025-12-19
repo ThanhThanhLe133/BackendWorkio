@@ -13,22 +13,47 @@ export class JobPostRecruiterBuilder {
     setAvailableQuantity(qty) { this.jobPost.available_quantity = qty; return this; }
     setPosition(position) { this.jobPost.position = position; return this; }
     setRequirements(req) { this.jobPost.requirements = req; return this; }
-    setDuration(duration) { this.jobPost.duration = duration; return this; }
+    setDuration(duration) {
+        this.jobPost.duration = normalizeEnum(duration, ENUMS.duration);
+        return this;
+    }
     setMonthlySalary(salary) { this.jobPost.monthly_salary = salary; return this; }
-    setRecruitmentType(type) { this.jobPost.recruitment_type = type; return this; }
+    setRecruitmentType(type) {
+        this.jobPost.recruitment_type = normalizeEnum(type, ENUMS.recruitment_type);
+        return this;
+    }
     setLanguages(languages) { this.jobPost.languages = languages; return this; }
     setRecruiterId(id) { this.jobPost.recruiter_id = id; return this; }
     setApplicationDeadlineFrom(date) { this.jobPost.application_deadline_from = date; return this; }
     setApplicationDeadlineTo(date) { this.jobPost.application_deadline_to = date; return this; }
     setSupportInfo(info) { this.jobPost.support_info = info; return this; }
-    setBenefits(benefits) { this.jobPost.benefits = benefits; return this; }
+    setBenefits(benefits) {
+        const value = Array.isArray(benefits) ? benefits[0] : benefits;
+        this.jobPost.benefits = normalizeEnum(value, ENUMS.benefits);
+        return this;
+    }
     setFields(fields) { this.jobPost.fields = fields; return this; }
-    setGraduationRank(rank) { this.jobPost.graduation_rank = rank; return this; }
-    setComputerSkill(skill) { this.jobPost.computer_skill = skill; return this; }
-    setJobType(type) { this.jobPost.job_type = type; return this; }
-    setWorkingTime(time) { this.jobPost.working_time = time; return this; }
+    setGraduationRank(rank) {
+        this.jobPost.graduation_rank = normalizeEnum(rank, ENUMS.graduation_rank);
+        return this;
+    }
+    setComputerSkill(skill) {
+        this.jobPost.computer_skill = normalizeEnum(skill, ENUMS.computer_skill);
+        return this;
+    }
+    setJobType(type) {
+        this.jobPost.job_type = normalizeEnum(type, ENUMS.job_type);
+        return this;
+    }
+    setWorkingTime(time) {
+        this.jobPost.working_time = normalizeEnum(time, ENUMS.working_time);
+        return this;
+    }
     setOtherRequirements(req) { this.jobPost.other_requirements = req; return this; }
-    setStatus(status) { this.jobPost.status = status; return this; }
+    setStatus(status) {
+        this.jobPost.status = normalizeEnum(status, ENUMS.status, 'Đang mở');
+        return this;
+    }
 
     build() {
         return this.jobPost;
@@ -175,3 +200,21 @@ export class JobPostRecruiterBuilder {
         };
     }
 }
+
+const ENUMS = {
+    recruitment_type: ['Phỏng vấn', 'Kiểm tra', 'Thử việc'],
+    duration: ['Toàn thời gian', 'Bán thời gian', 'Hợp đồng', 'Thực tập', '6 tháng', '12 tháng'],
+    benefits: ['Bảo hiểm y tế', 'Chương trình đào tạo', 'Thưởng'],
+    graduation_rank: ['Cấp 1', 'Cấp 2', 'Cấp 3', 'Đại học'],
+    computer_skill: ['Văn phòng', 'Kỹ thuật viên', 'Trung cấp', 'Khác'],
+    job_type: ['Văn phòng', 'Sản xuất', 'Giao dịch'],
+    working_time: ['Giờ hành chính', 'Ca kíp', 'Khác'],
+    status: ['Đang mở', 'Đang xem xét', 'Đã tuyển', 'Đã hủy']
+};
+
+const normalizeEnum = (value, allowed = [], fallback = null) => {
+    if (!value) return fallback;
+    const normalized = String(value).toLowerCase();
+    const matched = allowed.find(item => item.toLowerCase() === normalized);
+    return matched ?? fallback;
+};

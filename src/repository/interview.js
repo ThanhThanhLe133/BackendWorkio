@@ -94,8 +94,17 @@ class InterviewRepository {
         return db.Interview.findAll({
             where: { candidate_id },
             include: [
-                { model: db.Recruiter, as: 'recruiter' },
-                { model: db.JobPost, as: 'job_post' },
+                {
+                    model: db.JobPost,
+                    as: 'job_post',
+                    include: [
+                        {
+                            model: db.Recruiter,
+                            as: 'recruiter'
+                        }
+                    ]
+                },
+                { model: db.Candidate, as: 'candidate' },
             ],
         });
     }

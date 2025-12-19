@@ -4,6 +4,7 @@ export const createJobPostRecruiter = async ({ recruiter_id, data }) => new Prom
     try {
         const builder = new JobPostRecruiterBuilder()
             .setAvailableQuantity(data.available_quantity)
+            .setPosition(data.position)
             .setRequirements(data.requirements)
             .setDuration(data.duration)
             .setMonthlySalary(data.monthly_salary)

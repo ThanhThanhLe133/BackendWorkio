@@ -1,9 +1,10 @@
 import { JobPostAdminBuilder } from '../../builder/index.js';
 
-export const createJobPostRecruiter = async ({ recruiter_id, data }) => new Promise(async (resolve, reject) => {
+export const createJobPostAdmin = async ({ recruiter_id, data }) => new Promise(async (resolve, reject) => {
     try {
         const builder = new JobPostAdminBuilder()
             .setAvailableQuantity(data.available_quantity)
+            .setPosition(data.position)
             .setRequirements(data.requirements)
             .setDuration(data.duration)
             .setMonthlySalary(data.monthly_salary)

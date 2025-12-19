@@ -53,12 +53,12 @@ class JobPostRepository {
     }
 
     async getAllByCandidate(candidate_id) {
+        const candidateJson = JSON.stringify([candidate_id]);
         return db.JobPost.findAll({
-            where: {
-                applied_candidates: {
-                    [Op.contains]: [candidate_id]
-                }
-            },
+            where: db.Sequelize.where(
+                db.Sequelize.literal("COALESCE(applied_candidates, '[]')::jsonb"),
+                { [Op.contains]: db.Sequelize.literal(`'${candidateJson}'::jsonb`) }
+            ),
             include: [
                 { model: db.Recruiter, as: "recruiter" },
                 { model: db.Interview, as: "job_post" },

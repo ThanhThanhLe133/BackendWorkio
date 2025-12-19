@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.use(verifyTokenRecruiter);
 
+router.get('/', controllers.getRecruiterProfile);
 router.put('/update', controllers.updateRecruiterProfile);
 
 export default router;
