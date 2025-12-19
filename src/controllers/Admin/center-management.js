@@ -42,7 +42,26 @@ export const createCenterAdmin = async (req, res) => {
         const admin_id = getAdminId(req, res);
         if (!admin_id) return;
 
-        const response = await services.createCenterAdmin(req.body);
+        if (!req.body || Object.keys(req.body).length === 0) {
+            return badRequest('Request body không được để trống', res);
+        }
+
+        const { email, password, centerInfo, addressInfo } = req.body;
+        
+        if (!email || !password) {
+            return badRequest('Email và password là bắt buộc', res);
+        }
+
+        if (!centerInfo || !centerInfo.name) {
+            return badRequest('Tên trung tâm là bắt buộc', res);
+        }
+
+        const response = await services.createCenterAdmin({
+            email,
+            password,
+            centerInfo,
+            addressInfo
+        });
         if (response.err === 1) {
             return res.status(400).json(response);
         }
