@@ -11,7 +11,7 @@ class SupportRequestRepository {
     }
 
     async getAll() {
-        return db.SupportRequest.findAll({
+        const results = await db.SupportRequest.findAll({
             include: [
                 {
                     model: db.User,
@@ -26,14 +26,48 @@ class SupportRequestRepository {
                     ],
                 },
             ],
-            order: [["created_at", "DESC"]],
+            // Sequelize attribute is createdAt; with underscored: true the column is created_at
+            order: [["createdAt", "DESC"]],
+            raw: false, // Ensure toJSON hook is called
+        });
+
+        // Ensure timestamps are in the response
+        return results.map(item => {
+            const json = item.toJSON();
+            // Expose snake_case timestamps expected by FE
+            json.created_at = item.createdAt;
+            json.updated_at = item.updatedAt;
+            return json;
         });
     }
 
     async getByCreator(userId) {
-        return db.SupportRequest.findAll({
+        const results = await db.SupportRequest.findAll({
             where: { created_by: userId },
-            order: [["created_at", "DESC"]],
+            include: [
+                {
+                    model: db.User,
+                    as: "creator",
+                    attributes: ["id", "email", "name", "avatar_url"],
+                    include: [
+                        {
+                            model: db.Role,
+                            as: "role",
+                            attributes: ["value"],
+                        },
+                    ],
+                },
+            ],
+            order: [["createdAt", "DESC"]],
+            raw: false, // Ensure toJSON hook is called
+        });
+
+        // Ensure timestamps are in the response
+        return results.map(item => {
+            const json = item.toJSON();
+            json.created_at = item.createdAt;
+            json.updated_at = item.updatedAt;
+            return json;
         });
     }
 

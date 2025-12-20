@@ -1,4 +1,4 @@
-import { CenterRepository, CourseRepository } from '../../repository/index.js';
+import { CenterRepository, CourseRepository, CandidateRepository } from '../../repository/index.js';
 import { UserRepository, AddressRepository } from '../../repository/index.js';
 import { hashPassword } from '../../helpers/fn.js';
 import db from '../../models/index.js';
@@ -80,7 +80,57 @@ export const getCenterCoursesAdmin = (center_id) => new Promise(async (resolve) 
         if (!center_id) return resolve({ err: 1, mes: 'Missing center_id' });
         const courseRepo = new CourseRepository();
         const courses = await courseRepo.getByCenterId(center_id);
-        resolve({ err: 0, mes: 'Lấy khóa học của trung tâm thành công', data: courses || [] });
+
+        // Enrich course.candidates với thông tin tên học viên để FE hiển thị "Thông tin học viên"
+        let enrichedCourses = courses || [];
+        if (Array.isArray(courses) && courses.length) {
+            // Thu thập tất cả candidate_id xuất hiện trong các khóa học
+            const idSet = new Set();
+            for (const course of courses) {
+                const json = course.toJSON ? course.toJSON() : course;
+                const list = Array.isArray(json.candidates) ? json.candidates : [];
+                for (const item of list) {
+                    if (item && item.candidate_id) {
+                        idSet.add(item.candidate_id);
+                    }
+                }
+            }
+
+            if (idSet.size > 0) {
+                const candidateRepo = new CandidateRepository();
+                const basicCandidates = await candidateRepo.getBasicByIds([...idSet]);
+                const map = new Map();
+                for (const c of basicCandidates) {
+                    const json = c.toJSON ? c.toJSON() : c;
+                    map.set(json.candidate_id, json);
+                }
+
+                enrichedCourses = courses.map((course) => {
+                    const json = course.toJSON ? course.toJSON() : course;
+                    const list = Array.isArray(json.candidates) ? json.candidates : [];
+                    json.candidates = list.map((item) => {
+                        const info = map.get(item.candidate_id);
+                        const candidateName =
+                            info?.full_name || info?.candidate?.name || null;
+                        return {
+                            ...item,
+                            candidate_name: candidateName,
+                        };
+                    });
+                    return json;
+                });
+            } else {
+                enrichedCourses = courses.map((course) =>
+                    course.toJSON ? course.toJSON() : course
+                );
+            }
+        }
+
+        resolve({
+            err: 0,
+            mes: 'Lấy khóa học của trung tâm thành công',
+            data: enrichedCourses,
+        });
     } catch (error) {
         resolve({ err: 1, mes: error.message });
     }

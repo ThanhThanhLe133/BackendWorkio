@@ -13,6 +13,13 @@ class CourseRepository {
         });
     }
 
+    async deleteCourse(course_id, transaction = null) {
+        return db.Course.destroy({
+            where: { course_id },
+            transaction,
+        });
+    }
+
     async getById(course_id) {
         return db.Course.findOne({ where: { course_id } });
     }
@@ -33,6 +40,30 @@ class CourseRepository {
         return db.Course.findAll({
             where: { center_id },
             order: [['createdAt', 'DESC']]
+        });
+    }
+
+    async getAllActiveWithCenter() {
+        return db.Course.findAll({
+            where: { is_active: true },
+            include: [
+                {
+                    model: db.Center,
+                    as: 'center',
+                    required: true,
+                    where: { is_active: true },
+                    include: [
+                        {
+                            model: db.Address,
+                            as: 'address',
+                        },
+                    ],
+                },
+            ],
+            order: [
+                ['start_date', 'ASC'],
+                ['createdAt', 'DESC'],
+            ],
         });
     }
 

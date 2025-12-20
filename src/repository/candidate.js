@@ -18,6 +18,23 @@ class CandidateRepository {
         return [map[sort_by] || ['created_at', 'DESC']];
     }
 
+    async getBasicByIds(candidate_ids = []) {
+        const ids = Array.isArray(candidate_ids) ? candidate_ids : [candidate_ids];
+        if (!ids.length) return [];
+
+        return db.Candidate.findAll({
+            where: { candidate_id: { [Op.in]: ids } },
+            attributes: ["candidate_id", "full_name", "email", "phone"],
+            include: [
+                {
+                    model: db.User,
+                    as: "candidate",
+                    attributes: ["id", "email", "name"],
+                },
+            ],
+        });
+    }
+
     async getAll(filters = {}) {
         const {
             search,

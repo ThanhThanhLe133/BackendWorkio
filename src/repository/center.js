@@ -30,7 +30,15 @@ class CenterRepository {
     }
 
     async getAll(filters = {}) {
-        const { search, is_active, sort_by, order } = filters;
+        const {
+            search,
+            is_active,
+            province_code,
+            ward_code,
+            sort_by,
+            order,
+            training_field,
+        } = filters;
         const where = {};
         if (search) {
             const keyword = `%${search}%`;
@@ -41,21 +49,51 @@ class CenterRepository {
             ];
         }
         if (is_active !== undefined) where.is_active = is_active === 'true' || is_active === true;
+        const addressInclude = {
+            model: db.Address,
+            as: 'address',
+        };
+        if (province_code || ward_code) {
+            addressInclude.where = {};
+            if (province_code) addressInclude.where.province_code = province_code;
+            if (ward_code) addressInclude.where.ward_code = ward_code;
+        }
+
+        const include = [
+            {
+                model: db.User,
+                as: 'center',
+                attributes: ['id', 'email', 'name', 'avatar_url', 'role_id']
+            },
+            addressInclude,
+        ];
+
+        if (training_field) {
+            const rawValues = Array.isArray(training_field)
+                ? training_field
+                : String(training_field)
+                    .split(',')
+                    .map((value) => value.trim())
+                    .filter(Boolean);
+
+            if (rawValues.length > 0) {
+                include.push({
+                    model: db.Course,
+                    as: 'courses',
+                    attributes: [],
+                    required: true,
+                    where: rawValues.length > 1
+                        ? { training_field: { [Op.in]: rawValues } }
+                        : { training_field: rawValues[0] },
+                });
+            }
+        }
 
         return db.Center.findAll({
             where,
-            include: [
-                {
-                    model: db.User,
-                    as: 'center',
-                    attributes: ['id', 'email', 'name', 'avatar_url', 'role_id']
-                },
-                {
-                    model: db.Address,
-                    as: 'address',
-                },
-            ],
+            include,
             order: this.buildOrder(sort_by, order),
+            distinct: true,
         });
     }
 

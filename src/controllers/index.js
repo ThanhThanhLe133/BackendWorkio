@@ -2,6 +2,8 @@ export * from './Candidate/auth.js'
 export * from './Candidate/job-post-management.js'
 export * from './Candidate/interview.js'
 export * from './Candidate/profile.js'
+export * from './Candidate/recruiter.js'
+export * from './Candidate/course.js'
 
 export * from './Recruiter/auth.js'
 export * from './Recruiter/job-post-management.js'
