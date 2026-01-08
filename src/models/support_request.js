@@ -9,6 +9,10 @@ export default (sequelize) => {
                 as: "creator",
             });
         }
+
+        toJSON() {
+            return { ...this.get() };
+        }
     }
 
     SupportRequest.init(
@@ -47,6 +51,7 @@ export default (sequelize) => {
             modelName: "SupportRequest",
             tableName: "SupportRequests",
             underscored: true,
+            timestamps: true, // Enable auto created_at & updated_at
         }
     );
 

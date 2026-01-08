@@ -1,13 +1,24 @@
 import { CandidateRepository, CenterRepository, CourseRepository } from "../../repository/index.js";
 
 export const STUDENT_STATUSES = {
+    PENDING: 'cho_duyet',
     LEARNING: 'dang_hoc',
     COMPLETED: 'da_hoc',
+    REJECTED: 'tu_choi',
 };
 
 export const ALLOWED_STUDENT_STATUSES = Object.values(STUDENT_STATUSES);
 
 const ALLOWED_STATUSES = ALLOWED_STUDENT_STATUSES;
+const ALLOWED_COURSE_FIELDS = [
+    'name',
+    'description',
+    'summary',
+    'details',
+    'start_date',
+    'end_date',
+    'capacity',
+];
 
 export class CourseManagement {
     constructor() {
@@ -42,10 +53,11 @@ export class CourseManagement {
         return this;
     }
 
-    setStatus(status) {
-        this.status = status;
-        return this;
-    }
+    setStatus(status) { this.status = status; return this; }
+    setAttendance(attendance) { this.attendance = attendance; return this; }
+    setTuitionConfirmed(confirmed) { this.tuition_confirmed = confirmed; return this; }
+    setSignedAt(date) { this.signed_at = date; return this; }
+    setNotes(notes) { this.notes = notes; return this; }
 
     async ensureCenterActive() {
         const center = await this.centerRepo.getCenterById(this.centerId);
@@ -68,6 +80,119 @@ export class CourseManagement {
             mes: 'Tạo khóa học thành công',
             data: course
         };
+    }
+
+    async updateCourse() {
+        await this.ensureCenterActive();
+        if (!this.courseId) throw new Error('Thiếu mã khóa học');
+
+        const course = await this.courseRepo.getById(this.courseId);
+        if (!course || course.center_id !== this.centerId) throw new Error('Không tìm thấy khóa học');
+
+        const payload = {};
+        ALLOWED_COURSE_FIELDS.forEach((field) => {
+            if (this.courseData?.[field] !== undefined) {
+                payload[field] = this.courseData[field];
+            }
+        });
+
+        if (!Object.keys(payload).length) throw new Error('Không có dữ liệu để cập nhật');
+
+        const updated = await this.courseRepo.updateCourse(this.courseId, payload);
+        return {
+            err: 0,
+            mes: 'Cập nhật khóa học thành công',
+            data: updated,
+        };
+    }
+
+    async deleteCourse() {
+        await this.ensureCenterActive();
+        if (!this.courseId) throw new Error('Thiếu mã khóa học');
+
+        const course = await this.courseRepo.getById(this.courseId);
+        if (!course || course.center_id !== this.centerId) throw new Error('Không tìm thấy khóa học');
+
+        const candidates = Array.isArray(course.candidates) ? course.candidates : [];
+        const hasLearningStudents = candidates.some(
+            (candidate) => candidate?.status === STUDENT_STATUSES.LEARNING
+        );
+        if (hasLearningStudents) {
+            throw new Error('Không thể xóa khóa học khi vẫn còn học viên đang học');
+        }
+
+        await this.courseRepo.deleteCourse(this.courseId);
+        return {
+            err: 0,
+            mes: 'Xóa khóa học thành công',
+        };
+    }
+
+    async enrichCoursesWithCandidateInfo(courses) {
+        if (!Array.isArray(courses) || !courses.length) {
+            if (Array.isArray(courses)) {
+                return courses.map((course) => (course?.toJSON ? course.toJSON() : course));
+            }
+            return [];
+        }
+
+        const plainCourses = courses.map((course) => (course?.toJSON ? course.toJSON() : course));
+        const candidateIds = new Set();
+
+        plainCourses.forEach((course) => {
+            const list = Array.isArray(course.candidates) ? course.candidates : [];
+            list.forEach((candidate) => {
+                if (candidate?.candidate_id) {
+                    candidateIds.add(candidate.candidate_id);
+                }
+            });
+        });
+
+        if (!candidateIds.size) return plainCourses;
+
+        const basicCandidates = await this.candidateRepo.getBasicByIds([...candidateIds]);
+        const candidateMap = new Map();
+        basicCandidates.forEach((record) => {
+            const json = record?.toJSON ? record.toJSON() : record;
+            if (json?.candidate_id) {
+                candidateMap.set(json.candidate_id, json);
+            }
+        });
+
+        return plainCourses.map((course) => {
+            const list = Array.isArray(course.candidates) ? course.candidates : [];
+            course.candidates = list.map((student) => {
+                const info = candidateMap.get(student.candidate_id);
+                if (!info) return student;
+
+                const candidateName =
+                    info.full_name ||
+                    info.candidate?.name ||
+                    student.name ||
+                    student.candidate_name ||
+                    null;
+
+                const contactEmail = info.email || info.candidate?.email || student.email || null;
+                const contactPhone = info.phone || student.phone || null;
+
+                return {
+                    ...student,
+                    candidate_name: candidateName,
+                    name: candidateName,
+                    email: contactEmail,
+                    phone: contactPhone,
+                    candidate: info.candidate
+                        ? {
+                            id: info.candidate.id,
+                            name: info.candidate.name || candidateName,
+                            email: info.candidate.email || contactEmail,
+                            full_name: info.full_name || candidateName,
+                        }
+                        : student.candidate || null,
+                };
+            });
+            return course;
+        });
     }
 
     async getCoursesByCenter() {
@@ -143,7 +268,12 @@ export class CourseManagement {
 
         candidates.push({
             candidate_id: this.candidateId,
-            status: STUDENT_STATUSES.LEARNING
+            status: STUDENT_STATUSES.LEARNING,
+            attendance: 0,
+            tuition_confirmed: false,
+            signed_at: null,
+            notes: null,
+            requested_at: new Date().toISOString(),
         });
 
         await this.courseRepo.updateCourse(this.courseId, { candidates });
@@ -152,6 +282,27 @@ export class CourseManagement {
             err: 0,
             mes: 'Thêm học viên vào khóa học thành công',
             data: candidates
+        };
+    }
+
+    async removeCandidateFromCourse() {
+        await this.ensureCenterActive();
+        if (!this.candidateId) throw new Error('Thiếu mã học viên');
+
+        const course = await this.courseRepo.getById(this.courseId);
+        if (!course || course.center_id !== this.centerId) throw new Error('Không tìm thấy khóa học');
+
+        const candidates = Array.isArray(course.candidates) ? [...course.candidates] : [];
+        const index = candidates.findIndex((item) => item.candidate_id === this.candidateId);
+        if (index === -1) throw new Error('Học viên chưa có trong khóa học');
+
+        candidates.splice(index, 1);
+        await this.courseRepo.updateCourse(this.courseId, { candidates });
+
+        return {
+            err: 0,
+            mes: 'Đã xóa học viên khỏi khóa học',
+            data: candidates,
         };
     }
 
@@ -166,6 +317,10 @@ export class CourseManagement {
         if (!ALLOWED_STATUSES.includes(this.status)) throw new Error('Trạng thái học viên không hợp lệ');
 
         target.status = this.status;
+        if (this.attendance !== undefined) target.attendance = this.attendance;
+        if (this.tuition_confirmed !== undefined) target.tuition_confirmed = this.tuition_confirmed;
+        if (this.signed_at !== undefined) target.signed_at = this.signed_at;
+        if (this.notes !== undefined) target.notes = this.notes;
         await this.courseRepo.updateCourse(this.courseId, { candidates });
 
         return {

@@ -1,5 +1,11 @@
 import { CandidateRepository, JobPostRepository } from "../../repository/index.js";
 import { calculateMatchScore } from "../../helpers/matching.js";
+import {
+    formatJobPostList,
+    formatJobPostResponse,
+    normalizeRequirements,
+    normalizeSalary,
+} from "../../helpers/job-post.js";
 
 export class JobPostRecruiterBuilder {
     constructor() {
@@ -12,12 +18,18 @@ export class JobPostRecruiterBuilder {
 
     setAvailableQuantity(qty) { this.jobPost.available_quantity = qty; return this; }
     setPosition(position) { this.jobPost.position = position; return this; }
-    setRequirements(req) { this.jobPost.requirements = req; return this; }
+    setRequirements(req) {
+        this.jobPost.requirements = normalizeRequirements(req);
+        return this;
+    }
     setDuration(duration) {
         this.jobPost.duration = normalizeEnum(duration, ENUMS.duration);
         return this;
     }
-    setMonthlySalary(salary) { this.jobPost.monthly_salary = salary; return this; }
+    setMonthlySalary(salary) {
+        this.jobPost.monthly_salary = normalizeSalary(salary);
+        return this;
+    }
     setRecruitmentType(type) {
         this.jobPost.recruitment_type = normalizeEnum(type, ENUMS.recruitment_type);
         return this;
@@ -63,7 +75,8 @@ export class JobPostRecruiterBuilder {
         const jobPost = await this.jobPostRepo.createJobPost(this.jobPost);
         return {
             err: 0,
-            mes: "Thêm bài đăng thành công", jobPost
+            mes: "Thêm bài đăng thành công",
+            jobPost: formatJobPostResponse(jobPost)
         };
     }
 
@@ -75,7 +88,7 @@ export class JobPostRecruiterBuilder {
             throw new Error("Bạn không có quyền chỉnh sửa bài đăng này");
         }
         const updated = await this.jobPostRepo.updateJobPost(id, this.jobPost);
-        return { err: 0, mes: "Chỉnh sửa bài đăng thành công", jobPost: updated };
+        return { err: 0, mes: "Chỉnh sửa bài đăng thành công", jobPost: formatJobPostResponse(updated) };
     }
 
     async delete(id, recruiter_id) {
@@ -111,12 +124,15 @@ export class JobPostRecruiterBuilder {
     }
 
 
-    async getAllByRecruiter(recruiter_id) {
-        const posts = await this.jobPostRepo.getAllByRecruiter(recruiter_id);
+    async getAllByRecruiter(recruiter_id, filters = {}) {
+        const { rows, count, page, pageSize } = await this.jobPostRepo.getAllByRecruiterWithFilters(recruiter_id, filters);
         return {
             err: 0,
             mes: "Lấy danh sách bài đăng thành công",
-            data: posts
+            data: formatJobPostList(rows),
+            total: count,
+            page,
+            pageSize,
         };
     }
 
@@ -125,7 +141,8 @@ export class JobPostRecruiterBuilder {
         return {
             err: 0,
             mes: "Lấy danh sách bài đăng thành công",
-            data: posts
+            data: formatJobPostList(posts),
+            total: posts.length,
         };
     }
 
@@ -135,7 +152,7 @@ export class JobPostRecruiterBuilder {
         if (!job_post)
             throw new Error("Bài đăng không tồn tại");
 
-        const candidates = await this.jobPostRepo.getAllCandidates(job_post.applied_candidates);
+        const candidates = await this.candidateRepo.getCandidatesByIdsWithTraining(job_post.applied_candidates);
         return {
             err: 0,
             mes: "Đã lấy danh sách các ứng viên đã ứng tuyển cho bài đăng này",
@@ -148,7 +165,8 @@ export class JobPostRecruiterBuilder {
         return {
             err: 0,
             mes: "Lấy danh sách bài đăng theo ngành nghề thành công",
-            data: posts,
+            data: formatJobPostList(posts),
+            total: posts.length,
         };
     }
 

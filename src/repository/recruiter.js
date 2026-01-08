@@ -1,14 +1,78 @@
 import db from "../models/index.js";
+import { Op } from "sequelize";
 
 class RecruiterRepository {
-    async getAll() {
-        return db.Recruiter.findAll({
+    buildOrder(sort_by, order) {
+        const direction = String(order || 'DESC').toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+        const map = {
+            company_name: ['company_name', direction],
+            created_at: ['created_at', direction],
+            updated_at: ['updated_at', direction],
+        };
+        return [map[sort_by] || ['created_at', 'DESC']];
+    }
+
+    async attachHiredCount(recruiters = []) {
+        if (!recruiters.length) return [];
+
+        const recruiterIds = recruiters.map((r) => r.recruiter_id);
+        const counts = await db.JobPost.findAll({
+            attributes: ['recruiter_id', [db.Sequelize.fn('COUNT', db.Sequelize.col('recruiter_id')), 'count']],
+            where: { recruiter_id: recruiterIds, status: 'Đã tuyển' },
+            group: ['recruiter_id'],
+            raw: true,
+        });
+        const countMap = counts.reduce((acc, row) => {
+            acc[row.recruiter_id] = Number(row.count) || 0;
+            return acc;
+        }, {});
+
+        return recruiters.map((recruiter) => {
+            const json = recruiter.toJSON();
+            json.hired_count = countMap[recruiter.recruiter_id] ?? 0;
+            return json;
+        });
+    }
+
+    async getAll(filters = {}) {
+        const { search, is_verified, sort_by, order, fields } = filters;
+        const where = {};
+        if (search) {
+            const keyword = `%${search}%`;
+            where[Op.or] = [
+                { company_name: { [Op.iLike]: keyword } },
+                { email: { [Op.iLike]: keyword } },
+                { phone: { [Op.iLike]: keyword } },
+            ];
+        }
+        if (is_verified !== undefined) where.is_verified = is_verified === 'true' || is_verified === true;
+        if (fields) {
+            const list = Array.isArray(fields)
+                ? fields
+                : String(fields).split(',').map((f) => f.trim()).filter(Boolean);
+            if (list.length) {
+                const orClauses = list
+                    .map((f) => {
+                        const raw = f.replace(/'/g, "''");
+                        return `(fields @> '${JSON.stringify([raw])}'::jsonb OR fields @> '[{"industry": ["${raw}"]}]'::jsonb)`;
+                    })
+                    .join(' OR ');
+                where.recruiter_id = {
+                    [Op.in]: db.Sequelize.literal(`(SELECT recruiter_id FROM "JobPosts" WHERE ${orClauses})`),
+                };
+            }
+        }
+
+        const recruiters = await db.Recruiter.findAll({
+            where,
             include:
             {
                 model: db.User,
                 as: 'recruiter',
             },
+            order: this.buildOrder(sort_by, order),
         });
+        return this.attachHiredCount(recruiters);
     }
 
     async getByEmail(email) {
@@ -81,7 +145,7 @@ class RecruiterRepository {
     }
 
     async getDetailById(recruiter_id) {
-        return db.Recruiter.findOne({
+        const recruiter = await db.Recruiter.findOne({
             where: { recruiter_id },
             include: [
                 {
@@ -95,6 +159,13 @@ class RecruiterRepository {
                 },
             ],
         });
+        if (!recruiter) return null;
+        const hired_count = await db.JobPost.count({
+            where: { recruiter_id, status: 'Đã tuyển' },
+        });
+        const json = recruiter.toJSON();
+        json.hired_count = hired_count;
+        return json;
     }
 
     async updateRecruiterProfile(user_id, payload) {

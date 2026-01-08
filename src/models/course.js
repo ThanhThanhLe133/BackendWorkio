@@ -39,6 +39,22 @@ export default (sequelize) => {
                 type: DataTypes.INTEGER,
                 allowNull: true,
             },
+            training_field: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            occupation_type: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            summary: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+            },
+            details: {
+                type: DataTypes.JSON,
+                allowNull: true,
+            },
             start_date: {
                 type: DataTypes.DATEONLY,
                 allowNull: true,

@@ -37,7 +37,7 @@ export class InterviewAdminBuilder {
         if (!interview)
             throw new Error("Interview không tồn tại");
 
-        const updated = await this.interviewRepo.updateInterview(id, this.interview);
+        const updated = await this.interviewRepo.updateInterview(id, this.interview, { allowStatusChange: true });
         return {
             err: 0,
             mes: "Cập nhật interview thành công",

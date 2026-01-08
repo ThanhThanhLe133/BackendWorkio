@@ -50,7 +50,7 @@ export class InterviewRecruiterBuilder {
             throw new Error("Bạn không có quyền tạo cuộc phỏng vấn với bài đăng này");
         }
 
-        const updated = await this.interviewRepo.updateInterview(id, this.interview);
+        const updated = await this.interviewRepo.updateInterview(id, this.interview, { allowStatusChange: true });
         return {
             err: 0,
             mes: "Cập nhật interview thành công",

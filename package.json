@@ -12,7 +12,7 @@
     "cron": "nodemon cron.js",
     "migrate": "npx sequelize-cli db:migrate --config src/config/config.cjs --migrations-path src/migrations",
     "fastapi": "uvicorn app:app --reload",
-    "dev": "\"npm run node\""
+    "dev": "npm run node"
   },
   "author": "",
   "license": "ISC",

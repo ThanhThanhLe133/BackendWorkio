@@ -7,6 +7,6 @@ export const getAllInterviewsOfCandidate = async ({ candidate_id }) => new Promi
         resolve(result);
     } catch (error) {
         console.error('Get all interviews error:', error);
-        resolve({ err: 1, mes: error.message });
+        resolve({ err: 1, mes: error?.message || 'Lấy danh sách phỏng vấn thất bại' });
     }
 });

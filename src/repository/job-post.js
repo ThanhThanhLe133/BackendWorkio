@@ -1,5 +1,6 @@
 import db from "../models/index.js";
 import { Op } from "sequelize";
+import { buildJobPostSalaryWhere, normalizeFieldsFilter } from "../helpers/job-post.js";
 class JobPostRepository {
     async getById(id) {
         return db.JobPost.findOne({
@@ -41,6 +42,68 @@ class JobPostRepository {
                 { model: db.Interview, as: 'job_post' },
             ],
         });
+    }
+
+    async getAllByRecruiterWithFilters(recruiter_id, filters = {}) {
+        const {
+            status,
+            job_type,
+            working_time,
+            graduation_rank,
+            computer_skill,
+            fields,
+            min_salary,
+            max_salary,
+            search,
+            limit = 20,
+            page = 1,
+        } = filters;
+
+        const where = { recruiter_id };
+        if (status) where.status = status;
+        if (job_type) where.job_type = job_type;
+        if (working_time) where.working_time = working_time;
+        if (graduation_rank) where.graduation_rank = graduation_rank;
+        if (computer_skill) where.computer_skill = computer_skill;
+
+        const salaryWhere = buildJobPostSalaryWhere({ min_salary, max_salary });
+        if (Object.keys(salaryWhere).length) {
+            where.monthly_salary = salaryWhere;
+        }
+
+        if (search) {
+            where.position = { [Op.iLike]: `%${search}%` };
+        }
+
+        const andConditions = [];
+        const normalizedFields = normalizeFieldsFilter(fields);
+        if (normalizedFields.length) {
+            const fieldConditions = normalizedFields.flatMap((field) => ([
+                { fields: { [Op.contains]: [{ industry: [field] }] } },
+                { fields: { [Op.contains]: [field] } },
+            ]));
+            andConditions.push({ [Op.or]: fieldConditions });
+        }
+
+        const pageNumber = Number(page) > 0 ? Number(page) : 1;
+        const pageSize = Number(limit) > 0 ? Number(limit) : 20;
+        const offset = (pageNumber - 1) * pageSize;
+
+        const whereClause = { ...where };
+        if (andConditions.length) whereClause[Op.and] = andConditions;
+
+        const { rows, count } = await db.JobPost.findAndCountAll({
+            where: whereClause,
+            include: [
+                { model: db.Recruiter, as: 'recruiter' },
+                { model: db.Interview, as: 'job_post' },
+            ],
+            limit: pageSize,
+            offset,
+            order: [['updated_at', 'DESC']],
+        });
+
+        return { rows, count, page: pageNumber, pageSize };
     }
 
     async getAll() {

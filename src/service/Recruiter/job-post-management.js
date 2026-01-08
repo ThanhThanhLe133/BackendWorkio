@@ -72,10 +72,10 @@ export const deleteJobPostRecruiter = async ({ recruiter_id, job_post_id }) => n
     }
 });
 
-export const getAllJobPostsRecruiter = async ({ recruiter_id }) => new Promise(async (resolve, reject) => {
+export const getAllJobPostsRecruiter = async ({ recruiter_id, filters = {} }) => new Promise(async (resolve, reject) => {
     try {
         const builder = new JobPostRecruiterBuilder();
-        const result = await builder.getAllByRecruiter(recruiter_id);
+        const result = await builder.getAllByRecruiter(recruiter_id, filters);
         resolve(result);
     } catch (error) {
         console.error('Get all job posts error:', error);

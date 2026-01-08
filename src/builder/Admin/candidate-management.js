@@ -49,8 +49,8 @@ export class CandidateManagement {
         return this;
     }
 
-    async getAllCandidates() {
-        const candidates = await this.candidateRepo.getAll();
+    async getAllCandidates(filters = {}) {
+        const candidates = await this.candidateRepo.getAll(filters);
         return {
             err: 0,
             mes: 'Lấy danh sách ứng viên thành công',

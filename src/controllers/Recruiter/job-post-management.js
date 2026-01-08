@@ -66,7 +66,35 @@ export const getAllJobPostsRecruiter = async (req, res) => {
     try {
         const recruiter_id = getRecruiterId(req, res);
         if (!recruiter_id) return;
-        const response = await services.getAllJobPostsRecruiter({ recruiter_id });
+        const {
+            status,
+            job_type,
+            working_time,
+            graduation_rank,
+            computer_skill,
+            fields,
+            min_salary,
+            max_salary,
+            page,
+            limit,
+            search,
+        } = req.query;
+
+        const filters = {
+            status,
+            job_type,
+            working_time,
+            graduation_rank,
+            computer_skill,
+            fields,
+            min_salary,
+            max_salary,
+            page,
+            limit,
+            search,
+        };
+
+        const response = await services.getAllJobPostsRecruiter({ recruiter_id, filters });
 
         if (response.err === 1) {
             return res.status(400).json(response);

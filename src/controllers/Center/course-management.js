@@ -38,6 +38,49 @@ export const getCenterCourses = async (req, res) => {
     }
 };
 
+export const updateCourse = async (req, res) => {
+    try {
+        const center_id = getCenterId(req, res);
+        if (!center_id) return;
+
+        if (!Object.keys(req.body || {}).length) {
+            return badRequest('Không có dữ liệu để cập nhật', res);
+        }
+
+        const response = await services.updateCourse({
+            center_id,
+            course_id: req.params.courseId,
+            courseData: req.body,
+        });
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log(error);
+        return internalServerError(res);
+    }
+};
+
+export const deleteCourse = async (req, res) => {
+    try {
+        const center_id = getCenterId(req, res);
+        if (!center_id) return;
+
+        const response = await services.deleteCourse({
+            center_id,
+            course_id: req.params.courseId,
+        });
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log(error);
+        return internalServerError(res);
+    }
+};
+
 export const addStudentToCourse = async (req, res) => {
     try {
         const center_id = getCenterId(req, res);
@@ -66,7 +109,7 @@ export const updateStudentStatus = async (req, res) => {
         const center_id = getCenterId(req, res);
         if (!center_id) return;
 
-        const { status } = req.body;
+        const { status, attendance, tuition_confirmed, signed_at, notes } = req.body;
         const candidate_id = req.params.candidateId;
         if (!status) return badRequest('status is required', res);
         if (!ALLOWED_STUDENT_STATUSES.includes(status)) return badRequest('Invalid student status', res);
@@ -75,7 +118,34 @@ export const updateStudentStatus = async (req, res) => {
             center_id,
             course_id: req.params.courseId,
             candidate_id,
-            status
+            status,
+            attendance,
+            tuition_confirmed,
+            signed_at,
+            notes,
+        });
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log(error);
+        return internalServerError(res);
+    }
+};
+
+export const removeStudentFromCourse = async (req, res) => {
+    try {
+        const center_id = getCenterId(req, res);
+        if (!center_id) return;
+
+        const candidate_id = req.params.candidateId;
+        if (!candidate_id) return badRequest('candidateId is required', res);
+
+        const response = await services.removeStudentFromCourse({
+            center_id,
+            course_id: req.params.courseId,
+            candidate_id,
         });
         if (response.err === 1) {
             return res.status(400).json(response);
