@@ -117,6 +117,17 @@ class CandidateRepository {
         return await db.Candidate.destroy({ where: { candidate_id } });
     }
 
+    async getCandidatesByIds(candidate_ids) {
+        return await db.Candidate.findAll({
+            where: {
+                candidate_id: {
+                    [db.Sequelize.Op.in]: candidate_ids
+                }
+            },
+            attributes: ['candidate_id', 'full_name']
+        });
+    }
+
     async updateCandidateProfile(user_id, payload) {
         const transaction = await db.sequelize.transaction();
         try {

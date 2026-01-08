@@ -73,10 +73,57 @@ export class CourseManagement {
     async getCoursesByCenter() {
         await this.ensureCenterActive();
         const courses = await this.courseRepo.getByCenterId(this.centerId);
+        
+        if (!courses || courses.length === 0) {
+            return {
+                err: 0,
+                mes: 'Lấy danh sách khóa học thành công',
+                data: []
+            };
+        }
+
+        // Lấy tất cả candidate IDs từ các khóa học
+        const candidateIds = new Set();
+        courses.forEach(course => {
+            if (Array.isArray(course.candidates)) {
+                course.candidates.forEach(c => {
+                    if (c.candidate_id) candidateIds.add(c.candidate_id);
+                });
+            }
+        });
+
+        // Nếu không có candidates, trả về luôn
+        if (candidateIds.size === 0) {
+            return {
+                err: 0,
+                mes: 'Lấy danh sách khóa học thành công',
+                data: courses
+            };
+        }
+
+        // Lấy thông tin candidates
+        const candidates = await this.candidateRepo.getCandidatesByIds([...candidateIds]);
+        const candidateMap = new Map();
+        candidates.forEach(candidate => {
+            candidateMap.set(candidate.candidate_id, candidate.full_name);
+        });
+
+        // Map thêm name vào mỗi candidate
+        const coursesWithNames = courses.map(course => {
+            const courseData = course.toJSON ? course.toJSON() : course;
+            if (Array.isArray(courseData.candidates)) {
+                courseData.candidates = courseData.candidates.map(c => ({
+                    ...c,
+                    name: candidateMap.get(c.candidate_id) || null
+                }));
+            }
+            return courseData;
+        });
+
         return {
             err: 0,
             mes: 'Lấy danh sách khóa học thành công',
-            data: courses?.length ? courses : []
+            data: coursesWithNames
         };
     }
 

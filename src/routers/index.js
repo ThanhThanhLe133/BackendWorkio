@@ -10,6 +10,7 @@ import profileRecruiter from './Recruiter/profile.js'
 
 import authCenter from './Center/auth.js'
 import centerCourses from './Center/course-management.js'
+import profileCenter from './Center/profile.js'
 
 import authAdmin from './Admin/auth.js'
 import createAdmin from './Admin/create-admin.js'
@@ -41,6 +42,7 @@ const initRoutes = (app) => {
 
     app.use('/center/auth', authCenter)
     app.use('/center', centerCourses)
+    app.use('/center/profile', profileCenter)
 
     app.use('/admin', createAdmin)
     app.use('/admin', candidateAdmin)

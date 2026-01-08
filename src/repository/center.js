@@ -91,6 +91,48 @@ class CenterRepository {
     async createCenter(data, transaction = null) {
         return db.Center.create(data, { transaction });
     }
+
+    async updateCenterProfile(user_id, payload) {
+        const transaction = await db.sequelize.transaction();
+        try {
+            const { centerInfo, addressInfo } = payload;
+
+            const center = await db.Center.findOne({ where: { center_id: user_id } });
+            if (!center) {
+                throw new Error("Center not found");
+            }
+
+            // Update Center
+            if (centerInfo) {
+                await db.Center.update(centerInfo, {
+                    where: { center_id: user_id },
+                    transaction
+                });
+            }
+
+            // Update Address
+            if (addressInfo) {
+                if (center.address_id) {
+                    await db.Address.update(addressInfo, {
+                        where: { id: center.address_id },
+                        transaction
+                    });
+                } else {
+                    const newAddress = await db.Address.create(addressInfo, { transaction });
+                    await db.Center.update({ address_id: newAddress.id }, {
+                        where: { center_id: user_id },
+                        transaction
+                    });
+                }
+            }
+
+            await transaction.commit();
+            return true;
+        } catch (error) {
+            await transaction.rollback();
+            throw error;
+        }
+    }
 }
 
 export { CenterRepository };

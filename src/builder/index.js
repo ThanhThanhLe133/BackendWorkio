@@ -19,3 +19,4 @@ export * from './Recruiter/profile.js'
 
 export * from './Center/auth.js'
 export * from './Center/course-management.js'
+export * from './Center/profile.js'
