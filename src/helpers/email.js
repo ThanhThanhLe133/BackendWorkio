@@ -39,18 +39,8 @@ export const sendVerificationEmail = async (email, token, role) => {
 };
 
 export const sendResetPasswordEmail = async (email, token, role) => {
-    var verifyUrl = '';
-    if (role === 'Candidate') {
-        verifyUrl = `${process.env.CLIENT_URL}/candidate/auth/reset-password?token=${token}`;
-    }
-    else if (role === 'Recruiter') {
-        verifyUrl = `${process.env.CLIENT_URL}/recruiter/auth/reset-password?token=${token}`;
-    }
-    else if (role === 'Center') {
-        verifyUrl = `${process.env.CLIENT_URL}/center/auth/reset-password?token=${token}`;
-    } else {
-        verifyUrl = `${process.env.CLIENT_URL}/admin/auth/reset-password?token=${token}`;
-    }
+    // Link chung cho tất cả role, không phân biệt /candidate/auth, /center/auth
+    const verifyUrl = `${process.env.CLIENT_URL}/reset-password?token=${token}`;
 
     const mailOptions = {
         from: `"Workio Support" <${process.env.EMAIL_USER}>`,
@@ -59,7 +49,7 @@ export const sendResetPasswordEmail = async (email, token, role) => {
         html: `
         <h2>Reset your Workio password</h2>
         <p>Bạn vừa yêu cầu đặt lại mật khẩu cho tài khoản Workio của mình.</p>
-        <p>Nhấn vào liên kết bên dưới để đặt lại mật khẩu (có hiệu lực trong 1 ngày):</p>
+        <p>Nhấn vào liên kết bên dưới để đặt lại mật khẩu (có hiệu lực trong 1 giờ):</p>
         <a href="${verifyUrl}">Đặt lại mật khẩu</a>
 
         <br/><br/>
