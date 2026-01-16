@@ -158,30 +158,38 @@ class CenterRepository {
     async updateCenterProfile(user_id, payload) {
         const transaction = await db.sequelize.transaction();
         try {
-            const { centerInfo, addressInfo } = payload;
-
             const center = await db.Center.findOne({ where: { center_id: user_id } });
             if (!center) {
                 throw new Error("Center not found");
             }
 
-            // Update Center
-            if (centerInfo) {
-                await db.Center.update(centerInfo, {
+            // Extract center fields from payload
+            const centerFields = {};
+            const allowedFields = ['name', 'phone', 'email', 'website', 'description', 'code', 'is_active'];
+            
+            for (const field of allowedFields) {
+                if (payload[field] !== undefined) {
+                    centerFields[field] = payload[field];
+                }
+            }
+
+            // Update Center if there are fields to update
+            if (Object.keys(centerFields).length > 0) {
+                await db.Center.update(centerFields, {
                     where: { center_id: user_id },
                     transaction
                 });
             }
 
-            // Update Address
-            if (addressInfo) {
+            // Handle addressInfo if provided (for future address updates)
+            if (payload.addressInfo) {
                 if (center.address_id) {
-                    await db.Address.update(addressInfo, {
+                    await db.Address.update(payload.addressInfo, {
                         where: { id: center.address_id },
                         transaction
                     });
                 } else {
-                    const newAddress = await db.Address.create(addressInfo, { transaction });
+                    const newAddress = await db.Address.create(payload.addressInfo, { transaction });
                     await db.Center.update({ address_id: newAddress.id }, {
                         where: { center_id: user_id },
                         transaction
