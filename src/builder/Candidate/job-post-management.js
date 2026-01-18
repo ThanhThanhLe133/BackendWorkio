@@ -107,27 +107,42 @@ export class JobPostCandidateBuilder {
         };
     }
 
+    // SỬA HÀM NÀY
     async suggestJobsForCandidate(candidate_id) {
+        // 1. Lấy thông tin Candidate (kèm work experience, study history để build vector nếu cần)
         const candidate = await this.candidateRepo.getById(candidate_id);
         if (!candidate) throw new Error("Candidate not found");
-        const allJobPosts = await this.jobPostRepo.getOpenedJobs(candidate_id);
 
+        // 2. Lấy danh sách việc làm đang mở
+        // Cần đảm bảo hàm này trong Repo có include Recruiter
+        const allJobPosts = await this.jobPostRepo.getOpenedJobs(); 
+
+        // 3. Tính điểm
         const scoredJobs = allJobPosts.map(jobPost => {
-            const matchScore = calculateMatchScore(jobPost, candidate);
-            return { jobPost, matchScore };
+            // Chuyển Sequelize Model sang JSON để xử lý
+            const jobJson = jobPost.toJSON ? jobPost.toJSON() : jobPost;
+            const candJson = candidate.toJSON ? candidate.toJSON() : candidate;
+
+            const matchScore = calculateMatchScore(jobJson, candJson);
+            
+            return { 
+                ...jobJson, // Copy toàn bộ thông tin job
+                match_score: matchScore // Thêm điểm số
+            };
         });
+
+        // 4. Lọc và Sắp xếp
+        // Lấy những tin có điểm > 0 và sắp xếp từ cao xuống thấp
         const sortedJobs = scoredJobs
-            .filter(item => item.matchScore > 0)
-            .sort((a, b) => b.matchScore - a.matchScore)
-            .map(item => ({
-                ...item.jobPost.toJSON(),
-                match_score: item.matchScore,
-            }));
+            .filter(item => item.match_score > 0)
+            .sort((a, b) => b.match_score - a.match_score)
+            // Lấy top 20 tin phù hợp nhất
+            .slice(0, 20);
 
         return {
             err: 0,
-            mes: "Gợi ý việc làm phù hợp cho ứng viên thành công",
-            data: sortedJobs,
+            mes: "Lấy danh sách gợi ý thành công",
+            data: sortedJobs
         };
     }
 }

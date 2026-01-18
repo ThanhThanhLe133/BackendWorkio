@@ -4,6 +4,7 @@ import interviewCandidate from './Candidate/interview.js'
 import profileCandidate from './Candidate/profile.js'
 import recruiterCandidate from './Candidate/recruiter.js'
 import candidateCourses from './Candidate/course.js'
+import dashboardCandidate from './Candidate/dashboard.js'
 
 import authRecruiter from './Recruiter/auth.js'
 import jobPostRecruiter from './Recruiter/job-post-management.js'
@@ -38,6 +39,7 @@ const initRoutes = (app) => {
     app.use('/candidate/profile', profileCandidate)
     app.use('/candidate', recruiterCandidate)
     app.use('/candidate', candidateCourses)
+    app.use('/candidate/dashboard', dashboardCandidate)
 
     app.use('/recruiter/auth', authRecruiter)
     app.use('/recruiter', jobPostRecruiter)

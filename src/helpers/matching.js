@@ -11,11 +11,9 @@ const normalizeToArray = (value) => {
             const parsed = JSON.parse(trimmed);
             return Array.isArray(parsed) ? parsed : [parsed];
         } catch {
-            // Fallback: treat as comma-separated string
             return trimmed.split(',').map((s) => s.trim()).filter(Boolean);
         }
     }
-
     return [value];
 };
 
@@ -29,59 +27,96 @@ const normalizeJobFields = (fields) => {
             }
             return field ? [field] : [];
         })
-        .map((f) => String(f));
+        .map((f) => String(f).toLowerCase()); // Chuyển về chữ thường để so sánh chính xác hơn
 };
 
+// TĂNG TRỌNG SỐ BẰNG CẤP (Tổng max ~ 20 điểm)
 const degreeWeights = {
-    Doctorate: 2.5,
-    Master: 2,
-    Bachelor: 1.5,
-    Associate: 1.2,
-    Vocational: 1,
-    HighSchool: 0.5,
-    Secondary: 0.25,
-    Primary: 0.1,
-    Certificate: 0.75,
-    Custom: 0.5,
+    Doctorate: 20,
+    Master: 15,
+    Bachelor: 10,
+    Associate: 8,
+    Vocational: 5,
+    HighSchool: 2,
+    Secondary: 1,
+    Primary: 0,
+    Certificate: 5,
+    Custom: 2,
 };
 
 export const calculateMatchScore = (jobPost, candidate) => {
     const job = jobPost?.toJSON ? jobPost.toJSON() : jobPost;
     const candidateRoot = candidate?.candidate ?? candidate;
-    const vector = candidateRoot?.matching_vector ?? buildMatchingVector(candidateRoot, candidateRoot?.study_history, candidateRoot?.work_experience);
+    
+    // Nếu chưa có vector thì build lại, đảm bảo không null
+    const vector = candidateRoot?.matching_vector ?? buildMatchingVector(
+        candidateRoot, 
+        candidateRoot?.study_history, 
+        candidateRoot?.work_experience
+    );
 
-    const candidateFields = normalizeToArray(vector.fields_wish).map(String);
+    let score = 0;
+
+    // 1. NGÀNH NGHỀ (Quan trọng nhất - Max 40 điểm)
+    const candidateFields = normalizeToArray(vector.fields_wish).map(s => String(s).toLowerCase());
     const jobFields = normalizeJobFields(job?.fields);
-    const sharedFields = candidateFields.filter((f) => jobFields.includes(f));
-    const trainingFields = normalizeToArray(vector.training_fields);
-    const trainingMatches = trainingFields.filter((f) => jobFields.includes(f));
+    
+    // So sánh linh hoạt hơn (includes chuỗi con)
+    const sharedFields = candidateFields.filter((cf) => 
+        jobFields.some(jf => jf.includes(cf) || cf.includes(jf))
+    );
+    
+    // Mỗi ngành khớp +20 điểm (tối đa 40)
+    score += Math.min(sharedFields.length * 20, 40);
 
-    let score = sharedFields.length * 2;
+    // 2. LĨNH VỰC ĐÀO TẠO (Max 10 điểm)
+    const trainingFields = normalizeToArray(vector.training_fields).map(s => String(s).toLowerCase());
+    const trainingMatches = trainingFields.filter((tf) => 
+        jobFields.some(jf => jf.includes(tf) || tf.includes(jf))
+    );
+    if (trainingMatches.length > 0) score += 10;
 
+    // 3. BẰNG CẤP (Max 20 điểm)
     if (vector.highest_degree_level) {
         score += degreeWeights[vector.highest_degree_level] || 0;
     }
 
+    // 4. KINH NGHIỆM (Max 15 điểm)
     const experienceYears = vector.total_experience_years || 0;
-    score += Math.min(experienceYears, 10) * 0.3; // cap benefit from experience to avoid skew
+    // Mỗi năm kinh nghiệm +3 điểm, tối đa 5 năm (15 điểm)
+    score += Math.min(experienceYears, 5) * 3; 
 
-    if (candidateRoot?.graduation_rank && job?.graduation_rank && candidateRoot.graduation_rank === job.graduation_rank) score += 1;
-    if (candidateRoot?.computer_skill && job?.computer_skill && candidateRoot.computer_skill === job.computer_skill) score += 1;
-    if (candidateRoot?.job_type && job?.job_type && candidateRoot.job_type === job.job_type) score += 0.5;
-    if (candidateRoot?.working_time && job?.working_time && candidateRoot.working_time === job.working_time) score += 0.5;
+    // 5. KỸ NĂNG & YÊU CẦU KHÁC (Max 15 điểm)
+    // Xếp loại tốt nghiệp khớp: +5đ
+    if (candidateRoot?.graduation_rank && job?.graduation_rank && 
+        candidateRoot.graduation_rank === job.graduation_rank) score += 5;
+    
+    // Tin học khớp: +5đ
+    if (candidateRoot?.computer_skill && job?.computer_skill && 
+        candidateRoot.computer_skill === job.computer_skill) score += 5;
+    
+    // Loại công việc khớp: +2.5đ
+    if (candidateRoot?.job_type && job?.job_type && 
+        candidateRoot.job_type === job.job_type) score += 2.5;
+    
+    // Thời gian làm việc khớp: +2.5đ
+    if (candidateRoot?.working_time && job?.working_time && 
+        candidateRoot.working_time === job.working_time) score += 2.5;
 
+    // 6. NGÔN NGỮ (Cộng thêm điểm thưởng - Bonus)
     const jobLanguages = normalizeToArray(job?.languguages).map((l) => l?.toLowerCase?.() || l);
     const candidateLanguages = normalizeToArray(vector.languages).map((l) => l?.toLowerCase?.() || l);
-    const sharedLanguages = candidateLanguages.filter((lang) => jobLanguages.includes(lang));
+    
+    const sharedLanguages = candidateLanguages.filter((lang) => 
+        jobLanguages.some(jl => jl.includes(lang) || lang.includes(jl))
+    );
+    
     if (sharedLanguages.length) {
-        score += 0.5 + 0.25 * (sharedLanguages.length - 1);
+        score += 5 + (sharedLanguages.length - 1) * 2; // Ít nhất 5 điểm
     }
 
-    if (trainingMatches.length) {
-        score += 0.5 + 0.25 * (trainingMatches.length - 1);
-    }
+    if (vector.trained_at_center) score += 5; // Học viên trung tâm ưu tiên +5
 
-    if (vector.trained_at_center) score += 0.5;
-
-    return Number(score.toFixed(2));
+    // Đảm bảo không vượt quá 100
+    return Math.min(Math.round(score), 100);
 };
