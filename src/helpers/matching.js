@@ -61,18 +61,17 @@ export const calculateMatchScore = (jobPost, candidate) => {
     const candidateFields = normalizeToArray(vector.fields_wish).map(s => String(s).toLowerCase());
     const jobFields = normalizeJobFields(job?.fields);
     
-    // So sánh linh hoạt hơn (includes chuỗi con)
+    // So sánh CHÍNH XÁC ngành nghề (không dùng includes, chỉ so sánh bằng ===, không phân biệt hoa thường)
     const sharedFields = candidateFields.filter((cf) => 
-        jobFields.some(jf => jf.includes(cf) || cf.includes(jf))
+        jobFields.some(jf => jf === cf)
     );
-    
     // Mỗi ngành khớp +20 điểm (tối đa 40)
     score += Math.min(sharedFields.length * 20, 40);
 
     // 2. LĨNH VỰC ĐÀO TẠO (Max 10 điểm)
     const trainingFields = normalizeToArray(vector.training_fields).map(s => String(s).toLowerCase());
     const trainingMatches = trainingFields.filter((tf) => 
-        jobFields.some(jf => jf.includes(tf) || tf.includes(jf))
+        jobFields.some(jf => jf === tf)
     );
     if (trainingMatches.length > 0) score += 10;
 
