@@ -373,6 +373,19 @@ class JobPostRepository {
             return [];
         }
     }
+    // [NEW] Hàm xóa Interview khi hủy ứng tuyển
+    async deleteInterviewsByCandidateAndJob(candidate_id, job_post_id) {
+        // Cần import db ở đầu file nếu chưa có
+        // Lưu ý: db.Interview phải được định nghĩa trong models/index.js
+        return await db.Interview.destroy({
+            where: {
+                candidate_id: candidate_id,
+                job_post_id: job_post_id,
+                // Chỉ xóa nếu interview chưa diễn ra hoặc tùy logic (ở đây xóa hết theo yêu cầu của bạn)
+                status: { [Op.ne]: 'Đã kết thúc' } // Ví dụ: giữ lại lịch sử nếu đã xong, hoặc xóa hẳn thì bỏ dòng này
+            }
+        });
+    }
 }
 
 export { JobPostRepository };

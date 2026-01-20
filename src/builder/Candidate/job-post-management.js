@@ -150,4 +150,49 @@ export class JobPostCandidateBuilder {
             data: sortedJobs
         };
     }
+
+    // [NEW] Hàm xử lý Hủy Ứng Tuyển
+    async cancelApply(candidate_id, job_post_id) {
+        // 1. Lấy thông tin bài đăng
+        const job_post = await this.jobPostRepo.getById(job_post_id);
+        if (!job_post) throw new Error("Bài đăng không tồn tại");
+
+        // 2. Kiểm tra Deadline (Backend validation)
+        const now = new Date();
+        // Nếu đã qua hạn nộp hồ sơ -> Không cho hủy (Logic theo yêu cầu của bạn)
+        if (job_post.application_deadline_to && new Date(job_post.application_deadline_to) < now) {
+            return { err: 1, mes: "Đã quá hạn nộp hồ sơ, không thể hủy ứng tuyển lúc này." };
+        }
+
+        // 3. Xử lý xóa candidate_id khỏi mảng applied_candidates
+        let appliedCandidates = [];
+        if (Array.isArray(job_post.applied_candidates)) {
+            appliedCandidates = job_post.applied_candidates;
+        } else if (typeof job_post.applied_candidates === 'string') {
+            try { appliedCandidates = JSON.parse(job_post.applied_candidates); } catch (e) {}
+        }
+
+        // Nếu chưa ứng tuyển thì báo lỗi
+        if (!appliedCandidates.includes(candidate_id)) {
+            return { err: 1, mes: "Bạn chưa ứng tuyển vào vị trí này" };
+        }
+
+        // Lọc bỏ ID của candidate
+        const newAppliedList = appliedCandidates.filter(id => id !== candidate_id);
+
+        // 4. Cập nhật lại mảng vào DB
+        await this.jobPostRepo.updateJobPost(job_post_id, {
+            applied_candidates: newAppliedList
+        });
+
+        // 5. Xóa các Interview liên quan (Logic: Hủy ứng tuyển -> Hủy luôn phỏng vấn)
+        // Gọi hàm delete ở Repo mà ta vừa viết ở Bước 4
+        await this.jobPostRepo.deleteInterviewsByCandidateAndJob(candidate_id, job_post_id);
+
+        return { 
+            err: 0, 
+            mes: "Hủy ứng tuyển thành công. Lịch phỏng vấn liên quan (nếu có) đã được xóa.",
+            data: { job_post_id } 
+        };
+    }
 }

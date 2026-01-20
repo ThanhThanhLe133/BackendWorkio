@@ -53,3 +53,14 @@ export const suggestJobsForCandidate = async ({ candidate_id }) => new Promise(a
         return { err: 1, mes: error.message };
     }
 });
+
+export const cancelApplyJobCandidate = async ({ candidate_id, job_post_id }) => new Promise(async (resolve, reject) => {
+    try {
+        const builder = new JobPostCandidateBuilder();
+        const result = await builder.cancelApply(candidate_id, job_post_id);
+        resolve(result);
+    } catch (error) {
+        console.error('Cancel job application error:', error);
+        return { err: 1, mes: error.message };
+    }
+});

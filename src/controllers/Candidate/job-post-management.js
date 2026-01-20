@@ -81,5 +81,28 @@ export const suggestJobsForCandidate = async (req, res) => {
     } catch (error) {
         console.log(error);
         return internalServerError(res);
+    }    
+}
+
+export const cancelApplyJobCandidate = async (req, res) => {
+    try {
+        const candidate_id = getCandidateId(req, res);
+        if (!candidate_id) return;
+        
+        // Với method DELETE, dữ liệu thường nằm trong req.query (giống GET) 
+        // hoặc req.body tùy config, nhưng frontend bạn gửi params nên là req.query
+        const { job_post_id } = req.query; 
+
+        if (!job_post_id) return badRequest('Missing job_post_id', res);
+
+        const response = await services.cancelApplyJobCandidate({ candidate_id, job_post_id });
+
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log(error);
+        return internalServerError(res);
     }
 }
