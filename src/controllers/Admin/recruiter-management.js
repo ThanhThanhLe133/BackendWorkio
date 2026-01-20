@@ -1,34 +1,35 @@
-import * as services from '../../service/index.js'
-import { internalServerError, badRequest } from '../../middleWares/handle_error.js'
-import { email, password } from '../../helpers/joi_schema.js'
-import joi from 'joi'
-import { getAdminId } from '../../helpers/check_user.js'
+import * as services from "../../service/index.js";
+import {
+    internalServerError,
+    badRequest,
+} from "../../middleWares/handle_error.js";
+import { email, password } from "../../helpers/joi_schema.js";
+import joi from "joi";
+import { getAdminId } from "../../helpers/check_user.js";
 
 export const createRecruiter = async (req, res) => {
     try {
         const { error } = joi.object({ email, password }).validate({
             email: req.body.email,
-            password: req.body.password
+            password: req.body.password,
         });
 
-        if (error)
-            return badRequest(error.details[0]?.message, res)
+        if (error) return badRequest(error.details[0]?.message, res);
 
         const admin_id = getAdminId(req, res);
         if (!admin_id) return;
 
-        const response = await services.createRecruiter({ ...req.body })
+        const response = await services.createRecruiter({ ...req.body });
 
         if (response.err === 1) {
             return res.status(400).json(response);
         }
-        return res.status(200).json(response)
+        return res.status(200).json(response);
     } catch (error) {
         console.log(error);
         return internalServerError(res);
     }
-}
-
+};
 
 export const getAllRecruitersAdmin = async (req, res) => {
     try {
@@ -39,12 +40,12 @@ export const getAllRecruitersAdmin = async (req, res) => {
         if (response.err === 1) {
             return res.status(400).json(response);
         }
-        return res.status(200).json(response)
+        return res.status(200).json(response);
     } catch (error) {
         console.log(error);
         return internalServerError(res);
     }
-}
+};
 
 export const getRecruiterAdmin = async (req, res) => {
     try {
@@ -52,15 +53,15 @@ export const getRecruiterAdmin = async (req, res) => {
         if (!admin_id) return;
 
         const { recruiter_id } = req.query;
-        if (!recruiter_id) return badRequest('Missing recruiter_id', res);
+        if (!recruiter_id) return badRequest("Missing recruiter_id", res);
 
         const response = await services.getRecruiterDetailAdmin(recruiter_id);
         if (response.err === 1) {
-            return res.status(400).json(response);
+            return res.status(404).json(response);
         }
-        return res.status(200).json(response)
+        return res.status(200).json(response);
     } catch (error) {
         console.log(error);
         return internalServerError(res);
     }
-}
+};

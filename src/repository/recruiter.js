@@ -3,13 +3,14 @@ import { Op } from "sequelize";
 
 class RecruiterRepository {
     buildOrder(sort_by, order) {
-        const direction = String(order || 'DESC').toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+        const direction =
+            String(order || "DESC").toUpperCase() === "ASC" ? "ASC" : "DESC";
         const map = {
-            company_name: ['company_name', direction],
-            created_at: ['created_at', direction],
-            updated_at: ['updated_at', direction],
+            company_name: ["company_name", direction],
+            created_at: ["created_at", direction],
+            updated_at: ["updated_at", direction],
         };
-        return [map[sort_by] || ['created_at', 'DESC']];
+        return [map[sort_by] || ["created_at", "DESC"]];
     }
 
     async attachHiredCount(recruiters = []) {
@@ -17,13 +18,18 @@ class RecruiterRepository {
 
         const recruiterIds = recruiters.map((r) => r.recruiter_id);
         const counts = await db.JobPost.findAll({
-            attributes: ['recruiter_id', [db.Sequelize.fn('COUNT', db.Sequelize.col('recruiter_id')), 'count']],
-            where: { recruiter_id: recruiterIds, status: 'Đã tuyển' },
-            group: ['recruiter_id'],
+            attributes: [
+                "recruiter_id",
+                [db.Sequelize.fn("COUNT", db.Sequelize.col("recruiter_id")), "count"],
+            ],
+            where: { recruiter_id: recruiterIds, status: "Đã tuyển" },
+            group: ["recruiter_id"],
             raw: true,
         });
         const countMap = counts.reduce((acc, row) => {
-            acc[row.recruiter_id] = Number(row.count) || 0;
+            if (row && row.recruiter_id !== undefined && row.count !== undefined) {
+                acc[row.recruiter_id] = Number(row.count) || 0;
+            }
             return acc;
         }, {});
 
@@ -45,30 +51,35 @@ class RecruiterRepository {
                 { phone: { [Op.iLike]: keyword } },
             ];
         }
-        if (is_verified !== undefined) where.is_verified = is_verified === 'true' || is_verified === true;
+        if (is_verified !== undefined)
+            where.is_verified = is_verified === "true" || is_verified === true;
         if (fields) {
             const list = Array.isArray(fields)
                 ? fields
-                : String(fields).split(',').map((f) => f.trim()).filter(Boolean);
+                : String(fields)
+                    .split(",")
+                    .map((f) => f.trim())
+                    .filter(Boolean);
             if (list.length) {
                 const orClauses = list
                     .map((f) => {
                         const raw = f.replace(/'/g, "''");
                         return `(fields @> '${JSON.stringify([raw])}'::jsonb OR fields @> '[{"industry": ["${raw}"]}]'::jsonb)`;
                     })
-                    .join(' OR ');
+                    .join(" OR ");
                 where.recruiter_id = {
-                    [Op.in]: db.Sequelize.literal(`(SELECT recruiter_id FROM "JobPosts" WHERE ${orClauses})`),
+                    [Op.in]: db.Sequelize.literal(
+                        `(SELECT recruiter_id FROM "JobPosts" WHERE ${orClauses})`,
+                    ),
                 };
             }
         }
 
         const recruiters = await db.Recruiter.findAll({
             where,
-            include:
-            {
+            include: {
                 model: db.User,
-                as: 'recruiter',
+                as: "recruiter",
             },
             order: this.buildOrder(sort_by, order),
         });
@@ -81,12 +92,12 @@ class RecruiterRepository {
             include: [
                 {
                     model: db.Recruiter,
-                    as: 'recruiter',
+                    as: "recruiter",
                 },
                 {
                     model: db.Role,
-                    as: 'role',
-                    where: { value: 'Recruiter' },
+                    as: "role",
+                    where: { value: "Recruiter" },
                 },
             ],
         });
@@ -98,12 +109,12 @@ class RecruiterRepository {
             include: [
                 {
                     model: db.Recruiter,
-                    as: 'recruiter',
+                    as: "recruiter",
                 },
                 {
                     model: db.Role,
-                    as: 'role',
-                    where: { value: 'Recruiter' },
+                    as: "role",
+                    where: { value: "Recruiter" },
                 },
             ],
         });
@@ -115,18 +126,18 @@ class RecruiterRepository {
             include: [
                 {
                     model: db.Recruiter,
-                    as: 'recruiter',
+                    as: "recruiter",
                 },
                 {
                     model: db.Role,
-                    as: 'role',
-                    where: { value: 'Recruiter' },
+                    as: "role",
+                    where: { value: "Recruiter" },
                 },
             ],
         });
     }
 
-    async getRole(value = 'Admin') {
+    async getRole(value = "Admin") {
         return db.Role.findOne({ where: { value } });
     }
 
@@ -145,26 +156,48 @@ class RecruiterRepository {
     }
 
     async getDetailById(recruiter_id) {
+        console.log("getDetailById called with recruiter_id:", recruiter_id);
         const recruiter = await db.Recruiter.findOne({
             where: { recruiter_id },
             include: [
                 {
                     model: db.User,
-                    as: 'recruiter',
-                    attributes: ['id', 'email', 'name', 'avatar_url', 'role_id']
+                    as: "recruiter",
+                    attributes: ["id", "email", "name", "avatar_url", "role_id"],
                 },
                 {
                     model: db.Address,
-                    as: 'address',
+                    as: "address",
                 },
             ],
         });
+        console.log("Recruiter query result:", !!recruiter);
         if (!recruiter) return null;
         const hired_count = await db.JobPost.count({
-            where: { recruiter_id, status: 'Đã tuyển' },
+            where: { recruiter_id, status: "Đã tuyển" },
         });
+        const total_job_posts = await db.JobPost.count({
+            where: { recruiter_id },
+        });
+        const active_job_posts = await db.JobPost.count({
+            where: { recruiter_id, status: "Đang mở" },
+        });
+        const total_applications = db.Application
+            ? await db.Application.count({
+                include: [
+                    {
+                        model: db.JobPost,
+                        where: { recruiter_id },
+                        required: true,
+                    },
+                ],
+            })
+            : 0;
         const json = recruiter.toJSON();
         json.hired_count = hired_count;
+        json.total_job_posts = total_job_posts;
+        json.active_job_posts = active_job_posts;
+        json.total_applications = total_applications;
         return json;
     }
 
@@ -173,7 +206,9 @@ class RecruiterRepository {
         try {
             const { recruiterInfo, addressInfo } = payload;
 
-            const recruiter = await db.Recruiter.findOne({ where: { recruiter_id: user_id } });
+            const recruiter = await db.Recruiter.findOne({
+                where: { recruiter_id: user_id },
+            });
             if (!recruiter) {
                 throw new Error("Recruiter not found");
             }
@@ -182,7 +217,7 @@ class RecruiterRepository {
             if (recruiterInfo) {
                 await db.Recruiter.update(recruiterInfo, {
                     where: { recruiter_id: user_id },
-                    transaction
+                    transaction,
                 });
             }
 
@@ -191,14 +226,19 @@ class RecruiterRepository {
                 if (recruiter.address_id) {
                     await db.Address.update(addressInfo, {
                         where: { id: recruiter.address_id },
-                        transaction
+                        transaction,
                     });
                 } else {
-                    const newAddress = await db.Address.create(addressInfo, { transaction });
-                    await db.Recruiter.update({ address_id: newAddress.id }, {
-                        where: { recruiter_id: user_id },
-                        transaction
+                    const newAddress = await db.Address.create(addressInfo, {
+                        transaction,
                     });
+                    await db.Recruiter.update(
+                        { address_id: newAddress.id },
+                        {
+                            where: { recruiter_id: user_id },
+                            transaction,
+                        },
+                    );
                 }
             }
 

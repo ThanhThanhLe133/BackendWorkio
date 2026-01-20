@@ -1,6 +1,9 @@
 import db from "../models/index.js";
 import { Op } from "sequelize";
-import { buildJobPostSalaryWhere, normalizeFieldsFilter } from "../helpers/job-post.js";
+import {
+    buildJobPostSalaryWhere,
+    normalizeFieldsFilter,
+} from "../helpers/job-post.js";
 class JobPostRepository {
     // async getById(id) {
     //     return db.JobPost.findOne({
@@ -19,7 +22,8 @@ class JobPostRepository {
     // }
 
     async getById(id) {
-        return db.JobPost.findOne({
+        console.log("getById called with id:", id);
+        const result = await db.JobPost.findOne({
             where: { id },
             include: [
                 {
@@ -33,6 +37,32 @@ class JobPostRepository {
                 // Tạm thời bỏ include Interview nếu không cần thiết để tránh lỗi alias
             ],
         });
+        console.log("JobPost query result:", !!result);
+        return result;
+    }
+
+    async getByIdAndRecruiter(id, recruiter_id) {
+        console.log(
+            "getByIdAndRecruiter called with id:",
+            id,
+            "recruiter_id:",
+            recruiter_id,
+        );
+        const result = await db.JobPost.findOne({
+            where: { id, recruiter_id },
+            include: [
+                {
+                    model: db.Recruiter,
+                    as: "recruiter",
+                },
+                {
+                    model: db.Interview,
+                    as: "job_post",
+                },
+            ],
+        });
+        console.log("JobPost query result:", !!result);
+        return result;
     }
     
 
@@ -41,10 +71,16 @@ class JobPostRepository {
     }
 
     async updateJobPost(id, updateData) {
-        const [rowsUpdated, [updatedJobPost]] = await db.JobPost.update(updateData, {
-            where: { id },
-            returning: true,
-        });
+        const [rowsUpdated, [updatedJobPost]] = await db.JobPost.update(
+            updateData,
+            {
+                where: { id },
+                returning: true,
+            },
+        );
+        if (rowsUpdated === 0) {
+            throw new Error("Job post not found or no changes made");
+        }
         return updatedJobPost;
     }
 
@@ -178,10 +214,10 @@ class JobPostRepository {
         const andConditions = [];
         const normalizedFields = normalizeFieldsFilter(fields);
         if (normalizedFields.length) {
-            const fieldConditions = normalizedFields.flatMap((field) => ([
+            const fieldConditions = normalizedFields.flatMap((field) => [
                 { fields: { [Op.contains]: [{ industry: [field] }] } },
                 { fields: { [Op.contains]: [field] } },
-            ]));
+            ]);
             andConditions.push({ [Op.or]: fieldConditions });
         }
 
@@ -205,7 +241,7 @@ class JobPostRepository {
             ],
             limit: pageSize,
             offset,
-            order: [['updated_at', 'DESC']],
+            order: [["updated_at", "DESC"]],
         });
 
         return { rows, count, page: pageNumber, pageSize };
@@ -247,7 +283,7 @@ class JobPostRepository {
         return db.JobPost.findAll({
             where: db.Sequelize.where(
                 db.Sequelize.literal("COALESCE(applied_candidates, '[]')::jsonb"),
-                { [Op.contains]: db.Sequelize.literal(`'${candidateJson}'::jsonb`) }
+                { [Op.contains]: db.Sequelize.literal(`'${candidateJson}'::jsonb`) },
             ),
             include: [
                 { model: db.Recruiter, as: "recruiter" },
@@ -260,9 +296,7 @@ class JobPostRepository {
             where: {
                 id: { [Op.in]: applied_candidates },
             },
-            include: [
-                { model: db.User, as: "user" }
-            ],
+            include: [{ model: db.User, as: "user" }],
         });
     }
 
@@ -270,14 +304,12 @@ class JobPostRepository {
         return db.JobPost.findAll({
             where: {
                 fields: {
-                    [Op.or]: fieldList.map(f => ({
-                        [Op.contains]: { industry: [f] }
-                    }))
-                }
+                    [Op.or]: fieldList.map((f) => ({
+                        [Op.contains]: { industry: [f] },
+                    })),
+                },
             },
-            include: [
-                { model: db.Interview, as: 'job_post' },
-            ],
+            include: [{ model: db.Interview, as: "job_post" }],
         });
     }
 
@@ -286,7 +318,6 @@ class JobPostRepository {
             where: { status: "Đang mở" },
             include: [{ model: db.Recruiter, as: "recruiter" }],
         });
-
     }
 
     // --- FIX LỖI 2: Hàm lấy danh sách ứng viên chi tiết ---

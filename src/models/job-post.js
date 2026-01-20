@@ -1,15 +1,15 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes } from "sequelize";
 
 export default (sequelize) => {
     class JobPost extends Model {
         static associate(models) {
             JobPost.belongsTo(models.Recruiter, {
-                foreignKey: 'recruiter_id',
-                as: 'recruiter',
+                foreignKey: "recruiter_id",
+                as: "recruiter",
             });
             JobPost.hasMany(models.Interview, {
-                foreignKey: 'job_post_id',
-                as: 'job_post',
+                foreignKey: "job_post_id",
+                as: "job_post",
             });
         }
     }
@@ -39,12 +39,12 @@ export default (sequelize) => {
             },
             duration: {
                 type: DataTypes.ENUM(
-                    'Toàn thời gian',
-                    'Bán thời gian',
-                    'Hợp đồng',
-                    'Thực tập',
-                    '6 tháng',
-                    '12 tháng'
+                    "Toàn thời gian",
+                    "Bán thời gian",
+                    "Hợp đồng",
+                    "Thực tập",
+                    "6 tháng",
+                    "12 tháng",
                 ),
                 allowNull: true,
             },
@@ -54,9 +54,9 @@ export default (sequelize) => {
             },
             recruitment_type: {
                 type: DataTypes.ENUM(
-                    'Phỏng vấn',            // Interview
-                    'Kiểm tra',             // Test
-                    'Thử việc'              // Trial
+                    "Phỏng vấn", // Interview
+                    "Kiểm tra", // Test
+                    "Thử việc", // Trial
                 ),
                 allowNull: true,
             },
@@ -77,11 +77,8 @@ export default (sequelize) => {
                 allowNull: true,
             },
             benefits: {
-                type: DataTypes.ENUM(
-                    'Bảo hiểm y tế',
-                    'Chương trình đào tạo',
-                    'Thưởng'
-                ),
+                type: DataTypes.ENUM("Bảo hiểm y tế", "Chương trình đào tạo", "Thưởng"),
+                allowNull: true,
             },
             fields: {
                 type: DataTypes.JSON,
@@ -93,22 +90,22 @@ export default (sequelize) => {
                 defaultValue: [],
             },
             graduation_rank: {
-                type: DataTypes.ENUM('Cấp 1', 'Cấp 2', 'Cấp 3', 'Đại học'),
+                type: DataTypes.ENUM("Cấp 1", "Cấp 2", "Cấp 3", "Đại học"),
                 allowNull: true,
             },
 
             computer_skill: {
-                type: DataTypes.ENUM('Văn phòng', 'Kỹ thuật viên', 'Trung cấp', 'Khác'),
+                type: DataTypes.ENUM("Văn phòng", "Kỹ thuật viên", "Trung cấp", "Khác"),
                 allowNull: true,
             },
 
             job_type: {
-                type: DataTypes.ENUM('Văn phòng', 'Sản xuất', 'Giao dịch'),
+                type: DataTypes.ENUM("Văn phòng", "Sản xuất", "Giao dịch"),
                 allowNull: true,
             },
 
             working_time: {
-                type: DataTypes.ENUM('Giờ hành chính', 'Ca kíp', 'Khác'),
+                type: DataTypes.ENUM("Giờ hành chính", "Ca kíp", "Khác"),
                 allowNull: true,
             },
 
@@ -118,22 +115,33 @@ export default (sequelize) => {
             },
             status: {
                 type: DataTypes.ENUM(
-                    'Đang mở',       // Open / Active
-                    'Đang xem xét',  // Under Review
-                    'Đã tuyển',      // Accepted / Filled
-                    'Đã hủy'         // Cancelled / Rejected
+                    "Đang mở", // Open / Active
+                    "Đang xem xét", // Under Review
+                    "Đã tuyển", // Accepted / Filled
+                    "Đã hủy", // Cancelled / Rejected
                 ),
                 allowNull: true,
-                defaultValue: 'Đang mở',
+                defaultValue: "Đang mở",
+            },
+            created_at: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
+            },
+            updated_at: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
             },
         },
         {
             sequelize,
-            modelName: 'JobPost',
-            tableName: 'JobPosts',
+            modelName: "JobPost",
+            tableName: "JobPosts",
             underscored: true,
             timestamps: true,
         }
+
     );
 
     return JobPost;

@@ -1,6 +1,9 @@
-import * as services from '../../service/index.js'
-import { internalServerError, badRequest } from '../../middleWares/handle_error.js'
-import { getAdminId } from '../../helpers/check_user.js'
+import * as services from "../../service/index.js";
+import {
+    internalServerError,
+    badRequest,
+} from "../../middleWares/handle_error.js";
+import { getAdminId } from "../../helpers/check_user.js";
 
 export const createJobPostAdmin = async (req, res) => {
     try {
@@ -19,7 +22,7 @@ export const createJobPostAdmin = async (req, res) => {
         console.log(error);
         return internalServerError(res);
     }
-}
+};
 
 export const editJobPostAdmin = async (req, res) => {
     try {
@@ -40,7 +43,7 @@ export const editJobPostAdmin = async (req, res) => {
         console.log(error);
         return internalServerError(res);
     }
-}
+};
 
 export const deleteJobPostAdmin = async (req, res) => {
     try {
@@ -59,8 +62,7 @@ export const deleteJobPostAdmin = async (req, res) => {
         console.log(error);
         return internalServerError(res);
     }
-}
-
+};
 
 export const getAllJobPostsAdmin = async (req, res) => {
     try {
@@ -74,7 +76,7 @@ export const getAllJobPostsAdmin = async (req, res) => {
         console.log(error);
         return internalServerError(res);
     }
-}
+};
 
 export const getJobPostAdmin = async (req, res) => {
     try {
@@ -82,18 +84,18 @@ export const getJobPostAdmin = async (req, res) => {
         if (!admin_id) return;
 
         const { job_post_id } = req.query;
-        if (!job_post_id) return badRequest('Missing job_post_id', res);
+        if (!job_post_id) return badRequest("Missing job_post_id", res);
 
         const response = await services.getJobPostDetailAdmin({ job_post_id });
         if (response.err === 1) {
-            return res.status(400).json(response);
+            return res.status(404).json(response);
         }
         return res.status(200).json(response);
     } catch (error) {
         console.log(error);
         return internalServerError(res);
     }
-}
+};
 
 export const applyJobAdmin = async (req, res) => {
     try {
@@ -101,7 +103,10 @@ export const applyJobAdmin = async (req, res) => {
         if (!admin_id) return;
 
         const { job_post_id, candidate_id } = req.query;
-        const response = await services.applyJobAdmin({ candidate_id, job_post_id });
+        const response = await services.applyJobAdmin({
+            candidate_id,
+            job_post_id,
+        });
 
         if (response.err === 1) {
             return res.status(400).json(response);
@@ -111,7 +116,7 @@ export const applyJobAdmin = async (req, res) => {
         console.log(error);
         return internalServerError(res);
     }
-}
+};
 
 export const getAllPostsOfCandidateAdmin = async (req, res) => {
     try {
@@ -119,7 +124,9 @@ export const getAllPostsOfCandidateAdmin = async (req, res) => {
         if (!admin_id) return;
 
         const { candidate_id } = req.query;
-        const response = await services.getAllPostsOfCandidateAdmin({ candidate_id, });
+        const response = await services.getAllPostsOfCandidateAdmin({
+            candidate_id,
+        });
 
         if (response.err === 1) {
             return res.status(400).json(response);
@@ -129,7 +136,7 @@ export const getAllPostsOfCandidateAdmin = async (req, res) => {
         console.log(error);
         return internalServerError(res);
     }
-}
+};
 
 export const getAllCandidatesOfPostAdmin = async (req, res) => {
     try {
@@ -137,7 +144,9 @@ export const getAllCandidatesOfPostAdmin = async (req, res) => {
         if (!admin_id) return;
 
         const { job_post_id } = req.query;
-        const response = await services.getAllCandidatesOfPostAdmin({ job_post_id });
+        const response = await services.getAllCandidatesOfPostAdmin({
+            job_post_id,
+        });
 
         if (response.err === 1) {
             return res.status(400).json(response);
@@ -147,7 +156,7 @@ export const getAllCandidatesOfPostAdmin = async (req, res) => {
         console.log(error);
         return internalServerError(res);
     }
-}
+};
 
 export const filterJobsByFieldsAdmin = async (req, res) => {
     try {
@@ -165,7 +174,7 @@ export const filterJobsByFieldsAdmin = async (req, res) => {
         console.log(error);
         return internalServerError(res);
     }
-}
+};
 
 export const suggestJobsForCandidateAdmin = async (req, res) => {
     try {
@@ -173,7 +182,9 @@ export const suggestJobsForCandidateAdmin = async (req, res) => {
         if (!admin_id) return;
 
         const { candidate_id } = req.query;
-        const response = await services.suggestJobsForCandidateAdmin({ candidate_id });
+        const response = await services.suggestJobsForCandidateAdmin({
+            candidate_id,
+        });
 
         if (response.err === 1) {
             return res.status(400).json(response);
@@ -183,7 +194,7 @@ export const suggestJobsForCandidateAdmin = async (req, res) => {
         console.log(error);
         return internalServerError(res);
     }
-}
+};
 
 export const suggestCandidatesForJobAdmin = async (req, res) => {
     try {
@@ -191,7 +202,9 @@ export const suggestCandidatesForJobAdmin = async (req, res) => {
         if (!admin_id) return;
 
         const { job_post_id } = req.query;
-        const response = await services.suggestCandidatesForJobAdmin({ job_post_id });
+        const response = await services.suggestCandidatesForJobAdmin({
+            job_post_id,
+        });
 
         if (response.err === 1) {
             return res.status(400).json(response);
@@ -201,5 +214,5 @@ export const suggestCandidatesForJobAdmin = async (req, res) => {
         console.log(error);
         return internalServerError(res);
     }
-}
+};
 //end + edit candidate is_employed
