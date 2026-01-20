@@ -185,25 +185,38 @@ export class JobPostAdminBuilder {
     }
 
     async suggestCandidatesForJob(job_post_id) {
+        // 1. Lấy tất cả ứng viên (Đảm bảo repo này có include Address/User)
         const allCandidates = await this.candidateRepo.getAll();
 
+        // 2. Lấy Job Post (Đã fix include Address ở bước 1)
         const jobPost = await this.jobPostRepo.getById(job_post_id);
         if (!jobPost) throw new Error("Job post not found");
+
+        // 3. Tính điểm
         const scoredCandidates = allCandidates.map(candidate => {
             const matchScore = calculateMatchScore(jobPost, candidate);
             return { candidate, matchScore };
         });
 
+        // 4. Sắp xếp và Lọc
         const sortedCandidates = scoredCandidates
-            .filter(item => item.matchScore > 0)
+            .filter(item => item.matchScore > 0) // Giữ nguyên > 0 để loại hồ sơ rác
             .sort((a, b) => b.matchScore - a.matchScore)
-            .map(item => ({
-                ...item.candidate.toJSON(),
-                match_score: item.matchScore,
-            }));
+            .map(item => {
+                // Đảm bảo convert sang JSON nếu là Sequelize Instance
+                const candJson = item.candidate.toJSON ? item.candidate.toJSON() : item.candidate;
+                return {
+                    ...candJson,
+                    match_score: item.matchScore, 
+                    // Map thêm thông tin user nếu cấu trúc Candidate lồng nhau
+                    full_name: candJson.full_name || candJson.user?.name,
+                    email: candJson.email || candJson.user?.email,
+                };
+            });
+
         return {
             err: 0,
-            mes: "Gợi ý ứng viên phù hợp cho bài đăng thành công",
+            mes: "Gợi ý ứng viên phù hợp thành công",
             data: sortedCandidates,
         };
     }

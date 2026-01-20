@@ -132,7 +132,7 @@ export default (sequelize) => {
             modelName: 'JobPost',
             tableName: 'JobPosts',
             underscored: true,
-            timestamps: false,
+            timestamps: true,
         }
     );
 

@@ -16,7 +16,12 @@ export class JobPostCandidateBuilder {
     setDuration(duration) { this.jobPost.duration = duration; return this; }
     setMonthlySalary(salary) { this.jobPost.monthly_salary = salary; return this; }
     setRecruitmentType(type) { this.jobPost.recruitment_type = type; return this; }
-    setLanguages(languages) { this.jobPost.languages = languages; return this; }
+    //setLanguages(languages) { this.jobPost.languages = languages; return this; }
+    setLanguages(languages) {
+        // Map đúng vào tên trường "languguages" trong Model Sequelize
+        this.jobPostData.languguages = languages; 
+        return this;
+    }
     setRecruiterId(id) { this.jobPost.recruiter_id = id; return this; }
     setApplicationDeadlineFrom(date) { this.jobPost.application_deadline_from = date; return this; }
     setApplicationDeadlineTo(date) { this.jobPost.application_deadline_to = date; return this; }
