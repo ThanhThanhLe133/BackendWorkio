@@ -68,10 +68,8 @@ export const calculateMatchScore = (jobPost, candidate) => {
     );
     const jobFields = normalizeJobFields(job?.fields);
 
-    // So sánh ngành nghề (dùng includes để linh hoạt hơn)
-    const sharedFields = candidateFields.filter((cf) =>
-        jobFields.some((jf) => jf.includes(cf) || cf.includes(jf)),
-    );
+    // So sánh ngành nghề (dùng exact match sau lowercase)
+    const sharedFields = candidateFields.filter((cf) => jobFields.includes(cf));
     // Mỗi ngành khớp +20 điểm (tối đa 40)
     score += Math.min(sharedFields.length * 20, 40);
 
@@ -79,9 +77,7 @@ export const calculateMatchScore = (jobPost, candidate) => {
     const trainingFields = normalizeToArray(vector.training_fields).map((s) =>
         String(s).toLowerCase(),
     );
-    const trainingMatches = trainingFields.filter((tf) =>
-        jobFields.some((jf) => jf.includes(tf) || tf.includes(jf)),
-    );
+    const trainingMatches = trainingFields.filter((tf) => jobFields.includes(tf));
     if (trainingMatches.length > 0) score += 10;
 
     // 3. BẰNG CẤP (Max 20 điểm)
@@ -128,7 +124,7 @@ export const calculateMatchScore = (jobPost, candidate) => {
         score += 2.5;
 
     // 6. NGÔN NGỮ (Cộng thêm điểm thưởng - Bonus)
-    const jobLanguages = normalizeToArray(job?.languguages).map(
+    const jobLanguages = normalizeToArray(job?.languages).map(
         (l) => l?.toLowerCase?.() || l,
     );
     const candidateLanguages = normalizeToArray(vector.languages).map(
@@ -136,7 +132,7 @@ export const calculateMatchScore = (jobPost, candidate) => {
     );
 
     const sharedLanguages = candidateLanguages.filter((lang) =>
-        jobLanguages.some((jl) => jl.includes(lang) || lang.includes(jl)),
+        jobLanguages.includes(lang),
     );
 
     if (sharedLanguages.length) {

@@ -27,7 +27,9 @@ class RecruiterRepository {
             raw: true,
         });
         const countMap = counts.reduce((acc, row) => {
-            acc[row.recruiter_id] = Number(row.count) || 0;
+            if (row && row.recruiter_id !== undefined && row.count !== undefined) {
+                acc[row.recruiter_id] = Number(row.count) || 0;
+            }
             return acc;
         }, {});
 
@@ -154,6 +156,7 @@ class RecruiterRepository {
     }
 
     async getDetailById(recruiter_id) {
+        console.log("getDetailById called with recruiter_id:", recruiter_id);
         const recruiter = await db.Recruiter.findOne({
             where: { recruiter_id },
             include: [
@@ -168,6 +171,7 @@ class RecruiterRepository {
                 },
             ],
         });
+        console.log("Recruiter query result:", !!recruiter);
         if (!recruiter) return null;
         const hired_count = await db.JobPost.count({
             where: { recruiter_id, status: "Đã tuyển" },
@@ -178,15 +182,17 @@ class RecruiterRepository {
         const active_job_posts = await db.JobPost.count({
             where: { recruiter_id, status: "Đang mở" },
         });
-        const total_applications = await db.Application.count({
-            include: [
-                {
-                    model: db.JobPost,
-                    where: { recruiter_id },
-                    required: true,
-                },
-            ],
-        });
+        const total_applications = db.Application
+            ? await db.Application.count({
+                include: [
+                    {
+                        model: db.JobPost,
+                        where: { recruiter_id },
+                        required: true,
+                    },
+                ],
+            })
+            : 0;
         const json = recruiter.toJSON();
         json.hired_count = hired_count;
         json.total_job_posts = total_job_posts;
