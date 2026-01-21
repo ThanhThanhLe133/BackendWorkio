@@ -43,26 +43,15 @@ export class JobPostRecruiterBuilder {
         this.jobPost.recruitment_type = normalizeEnum(type, ENUMS.recruitment_type);
         return this;
     }
-    setLanguages(languages) {
-        this.jobPost.languages = languages;
-        return this;
+    //setLanguages(languages) { this.jobPost.languages = languages; return this; }
+    setLanguages(languages) { 
+        this.jobPost.languguages = languages; 
+        return this; 
     }
-    setRecruiterId(id) {
-        this.jobPost.recruiter_id = id;
-        return this;
-    }
-    setApplicationDeadlineFrom(date) {
-        this.jobPost.application_deadline_from = date;
-        return this;
-    }
-    setApplicationDeadlineTo(date) {
-        this.jobPost.application_deadline_to = date;
-        return this;
-    }
-    setSupportInfo(info) {
-        this.jobPost.support_info = info;
-        return this;
-    }
+    setRecruiterId(id) { this.jobPost.recruiter_id = id; return this; }
+    setApplicationDeadlineFrom(date) { this.jobPost.application_deadline_from = date; return this; }
+    setApplicationDeadlineTo(date) { this.jobPost.application_deadline_to = date; return this; }
+    setSupportInfo(info) { this.jobPost.support_info = info; return this; }
     setBenefits(benefits) {
         const value = Array.isArray(benefits) ? benefits[0] : benefits;
         this.jobPost.benefits = normalizeEnum(value, ENUMS.benefits);

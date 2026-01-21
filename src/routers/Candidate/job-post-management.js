@@ -8,4 +8,5 @@ router.get('/job-posts', controllers.getAllJobPostsCandidate)
 router.get('/job-posts-of-candidate', controllers.getAllPostsOfCandidateCandidate)
 router.get('/filter-by-fields', controllers.filterJobsByFieldsCandidate)
 router.get('/suggested-jobs', controllers.suggestJobsForCandidate)
+router.delete('/apply-job-post', controllers.cancelApplyJobCandidate);
 export default router; 

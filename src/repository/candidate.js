@@ -106,10 +106,19 @@ class CandidateRepository {
 
         return db.Candidate.findAll({
             where,
-            include: {
-                model: db.User,
-                as: 'candidate',
-            },
+            include: [
+                {
+                    model: db.User,
+                    as: 'candidate',
+                    attributes: ['id', 'email', 'name', 'avatar_url'], // Chỉ lấy field cần thiết
+                },
+                // --- FIX: Thêm include Address để thuật toán matching tính điểm địa điểm ---
+                {
+                    model: db.Address,
+                    as: 'address',
+                },
+                // --- Có thể thêm StudyHistory/WorkExperience nếu cần hiển thị chi tiết ---
+            ],
             order: this.buildOrder(sort_by, order),
         });
     }

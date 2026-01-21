@@ -1,28 +1,28 @@
 import { JobPostRecruiterBuilder } from "../../builder/index.js";
 
-export const createJobPostRecruiter = async ({ recruiter_id, data }) =>
-    new Promise(async (resolve, reject) => {
-        try {
-            const builder = new JobPostRecruiterBuilder()
-                .setAvailableQuantity(data.available_quantity)
-                .setPosition(data.position)
-                .setRequirements(data.requirements)
-                .setDuration(data.duration)
-                .setMonthlySalary(data.monthly_salary)
-                .setRecruitmentType(data.recruitment_type)
-                .setLanguages(data.languages)
-                .setRecruiterId(recruiter_id)
-                .setApplicationDeadlineFrom(data.application_deadline_from)
-                .setApplicationDeadlineTo(data.application_deadline_to)
-                .setSupportInfo(data.support_info)
-                .setBenefits(data.benefits)
-                .setFields(data.fields)
-                .setGraduationRank(data.graduation_rank)
-                .setComputerSkill(data.computer_skill)
-                .setJobType(data.job_type)
-                .setWorkingTime(data.working_time)
-                .setOtherRequirements(data.other_requirements)
-                .setStatus(data.status);
+export const createJobPostRecruiter = async ({ recruiter_id, data }) => new Promise(async (resolve, reject) => {
+    try {
+        const builder = new JobPostRecruiterBuilder()
+            .setAvailableQuantity(data.available_quantity)
+            .setPosition(data.position)
+            .setRequirements(data.requirements)
+            .setDuration(data.duration)
+            .setMonthlySalary(data.monthly_salary)
+            .setRecruitmentType(data.recruitment_type)
+            // --- FIX LỖI TẠI ĐÂY: Lấy đúng key languguages từ frontend ---
+            .setLanguages(data.languguages || data.languages)
+            .setRecruiterId(recruiter_id)
+            .setApplicationDeadlineFrom(data.application_deadline_from)
+            .setApplicationDeadlineTo(data.application_deadline_to)
+            .setSupportInfo(data.support_info)
+            .setBenefits(data.benefits)
+            .setFields(data.fields)
+            .setGraduationRank(data.graduation_rank)
+            .setComputerSkill(data.computer_skill)
+            .setJobType(data.job_type)
+            .setWorkingTime(data.working_time)
+            .setOtherRequirements(data.other_requirements)
+            .setStatus(data.status);
 
             const result = await builder.create();
             resolve(result);
@@ -32,32 +32,28 @@ export const createJobPostRecruiter = async ({ recruiter_id, data }) =>
         }
     });
 
-export const editJobPostRecruiter = async ({
-    recruiter_id,
-    job_post_id,
-    data,
-}) =>
-    new Promise(async (resolve, reject) => {
-        try {
-            const builder = new JobPostRecruiterBuilder()
-                .setAvailableQuantity(data.available_quantity)
-                .setPosition(data.position)
-                .setRequirements(data.requirements)
-                .setDuration(data.duration)
-                .setMonthlySalary(data.monthly_salary)
-                .setRecruitmentType(data.recruitment_type)
-                .setLanguages(data.languages)
-                .setApplicationDeadlineFrom(data.application_deadline_from)
-                .setApplicationDeadlineTo(data.application_deadline_to)
-                .setSupportInfo(data.support_info)
-                .setBenefits(data.benefits)
-                .setFields(data.fields)
-                .setGraduationRank(data.graduation_rank)
-                .setComputerSkill(data.computer_skill)
-                .setJobType(data.job_type)
-                .setWorkingTime(data.working_time)
-                .setOtherRequirements(data.other_requirements)
-                .setStatus(data.status);
+export const editJobPostRecruiter = async ({ recruiter_id, job_post_id, data }) => new Promise(async (resolve, reject) => {
+    try {
+        const builder = new JobPostRecruiterBuilder()
+            .setAvailableQuantity(data.available_quantity)
+            .setPosition(data.position)
+            .setRequirements(data.requirements)
+            .setDuration(data.duration)
+            .setMonthlySalary(data.monthly_salary)
+            .setRecruitmentType(data.recruitment_type)
+            // --- FIX LỖI TẠI ĐÂY: Lấy đúng key languguages từ frontend ---
+            .setLanguages(data.languguages || data.languages)
+            .setApplicationDeadlineFrom(data.application_deadline_from)
+            .setApplicationDeadlineTo(data.application_deadline_to)
+            .setSupportInfo(data.support_info)
+            .setBenefits(data.benefits)
+            .setFields(data.fields)
+            .setGraduationRank(data.graduation_rank)
+            .setComputerSkill(data.computer_skill)
+            .setJobType(data.job_type)
+            .setWorkingTime(data.working_time)
+            .setOtherRequirements(data.other_requirements)
+            .setStatus(data.status);
 
             const result = await builder.edit(job_post_id, recruiter_id);
             resolve(result);

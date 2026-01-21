@@ -3,6 +3,7 @@ import express from "express";
 import { verifyTokenRecruiter } from "../../middleWares/verify_token.js";
 const router = express.Router();
 router.use(verifyTokenRecruiter);
+router.get("/job-posts", controllers.getAllJobPostsRecruiter);
 router.post("/job-post", controllers.createJobPostRecruiter);
 router.patch("/job-post", controllers.editJobPostRecruiter);
 router.delete("/job-post", controllers.deleteJobPostRecruiter);

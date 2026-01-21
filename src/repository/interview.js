@@ -119,6 +119,63 @@ class InterviewRepository {
             return [];
         }
     }
+
+    async getCandidatesOfJob(job_post_id) {
+        try {
+            const job = await db.JobPost.findOne({
+                where: { id: job_post_id },
+                attributes: ['applied_candidates', 'updated_at']
+            });
+
+            if (!job || !job.applied_candidates || !job.applied_candidates.length) {
+                return [];
+            }
+
+            // Lấy danh sách Candidate kèm thông tin User VÀ Interview của Job đó
+            const candidates = await db.Candidate.findAll({
+                where: {
+                    candidate_id: { [Op.in]: job.applied_candidates }
+                },
+                include: [
+                    {
+                        model: db.User,
+                        as: 'candidate', // Alias User
+                        attributes: ['name', 'email', 'phone', 'avatar_url']
+                    },
+                    {
+                        model: db.Interview,
+                        as: 'interview',
+                        required: false,
+                        where: { job_post_id: job_post_id } // Chỉ lấy lịch của Job này
+                    }
+                ]
+            });
+
+            // Flatten dữ liệu
+            return candidates.map(c => {
+                const user = c.candidate || {}; // Alias trong model Candidate là 'candidate' (trỏ tới User)
+                const interview = c.interview && c.interview.length > 0 ? c.interview[0] : null;
+                
+                return {
+                    id: c.candidate_id,
+                    candidate_id: c.candidate_id,
+                    full_name: c.full_name || user.name || "Ứng viên",
+                    email: c.email || user.email,
+                    phone: c.phone || user.phone,
+                    avatar_url: user.avatar_url,
+                    experience_years: c.matching_vector?.total_experience_years || 0,
+                    major: c.fields_wish ? (Array.isArray(c.fields_wish) ? c.fields_wish[0] : c.fields_wish) : "",
+                    applied_at: job.updated_at,
+                    // --- MỚI: Trả về trạng thái phỏng vấn ---
+                    interview_status: interview ? interview.status : null,
+                    interview_id: interview ? interview.id : null
+                };
+            });
+        } catch (error) {
+            console.error("Error getting candidates:", error);
+            return [];
+        }
+    }
 }
 
 export { InterviewRepository };

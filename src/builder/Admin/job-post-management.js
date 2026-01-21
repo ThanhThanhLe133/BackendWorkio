@@ -250,8 +250,10 @@ export class JobPostAdminBuilder {
     }
 
     async suggestCandidatesForJob(job_post_id) {
+        // 1. Lấy tất cả ứng viên (Đảm bảo repo này có include Address/User)
         const allCandidates = await this.candidateRepo.getAll();
 
+        // 2. Lấy Job Post (Đã fix include Address ở bước 1)
         const jobPost = await this.jobPostRepo.getById(job_post_id);
         if (!jobPost) throw new Error("Job post not found");
 
@@ -264,6 +266,7 @@ export class JobPostAdminBuilder {
             return { candidate, matchScore };
         });
 
+        // 4. Sắp xếp và Lọc
         const sortedCandidates = scoredCandidates
             .filter((item) => item.matchScore > 0)
             .sort((a, b) => b.matchScore - a.matchScore)
@@ -273,7 +276,7 @@ export class JobPostAdminBuilder {
             }));
         return {
             err: 0,
-            mes: "Gợi ý ứng viên phù hợp cho bài đăng thành công",
+            mes: "Gợi ý ứng viên phù hợp thành công",
             data: sortedCandidates,
         };
     }
