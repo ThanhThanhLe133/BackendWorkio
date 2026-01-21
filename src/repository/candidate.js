@@ -258,6 +258,31 @@ class CandidateRepository {
         return await db.Candidate.destroy({ where: { candidate_id } });
     }
 
+    async getCandidatesByIds(candidate_ids = []) {
+        const ids = Array.isArray(candidate_ids) ? candidate_ids : [candidate_ids];
+        if (!ids.length) return [];
+
+        const candidates = await db.Candidate.findAll({
+            where: { candidate_id: { [db.Sequelize.Op.in]: ids } },
+            include: [
+                { 
+                    model: db.User, 
+                    as: 'candidate',
+                    attributes: ['id', 'email', 'name', 'avatar_url']
+                }
+            ],
+        });
+
+        return candidates.map(c => {
+            const json = c.toJSON();
+            // Lấy full_name từ candidate profile hoặc user name
+            json.full_name = c.full_name || c.candidate?.name || null;
+            json.email = c.candidate?.email || null;
+            json.phone = c.phone || null;
+            return json;
+        });
+    }
+
     async getCandidatesByIdsWithTraining(candidate_ids = []) {
         const ids = Array.isArray(candidate_ids) ? candidate_ids : [candidate_ids];
         if (!ids.length) return [];

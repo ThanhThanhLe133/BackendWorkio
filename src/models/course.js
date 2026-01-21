@@ -63,6 +63,11 @@ export default (sequelize) => {
                 type: DataTypes.DATEONLY,
                 allowNull: true,
             },
+            capacity: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                comment: 'Sĩ số tối đa của khóa học',
+            },
             candidates: {
                 type: DataTypes.JSON,
                 allowNull: true,

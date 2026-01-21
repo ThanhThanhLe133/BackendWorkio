@@ -14,6 +14,8 @@ export * from './Recruiter/profile.js'
 export * from './Center/auth.js'
 export * from './Center/course-management.js'
 export * from './Center/profile.js'
+export * from './Center/statistics.js'
+export * from './Center/training-fields.js'
 
 export * from './Admin/auth.js'
 export * from './Admin/create-admin.js'

@@ -12,6 +12,12 @@ export const getMe = async ({ user_id }) =>
                         as: "role",
                         attributes: ["value"],
                     },
+                    {
+                        model: db.Center,
+                        as: "center",
+                        attributes: ["center_id", "name", "code", "phone", "email", "website", "description"],
+                        required: false,
+                    },
                 ],
             });
             if (!user) throw new Error("User not found");

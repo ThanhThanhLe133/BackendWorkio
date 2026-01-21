@@ -18,6 +18,8 @@ const ALLOWED_COURSE_FIELDS = [
     'start_date',
     'end_date',
     'capacity',
+    'training_field',
+    'duration_hours',
 ];
 
 export class CourseManagement {
@@ -230,17 +232,26 @@ export class CourseManagement {
         const candidates = await this.candidateRepo.getCandidatesByIds([...candidateIds]);
         const candidateMap = new Map();
         candidates.forEach(candidate => {
-            candidateMap.set(candidate.candidate_id, candidate.full_name);
+            candidateMap.set(candidate.candidate_id, {
+                full_name: candidate.full_name,
+                email: candidate.email,
+                phone: candidate.phone
+            });
         });
 
-        // Map thêm name vào mỗi candidate
+        // Map thêm name, email, phone vào mỗi candidate
         const coursesWithNames = courses.map(course => {
             const courseData = course.toJSON ? course.toJSON() : course;
             if (Array.isArray(courseData.candidates)) {
-                courseData.candidates = courseData.candidates.map(c => ({
-                    ...c,
-                    name: candidateMap.get(c.candidate_id) || null
-                }));
+                courseData.candidates = courseData.candidates.map(c => {
+                    const info = candidateMap.get(c.candidate_id);
+                    return {
+                        ...c,
+                        name: info?.full_name || null,
+                        email: info?.email || null,
+                        phone: info?.phone || null
+                    };
+                });
             }
             return courseData;
         });
@@ -327,6 +338,88 @@ export class CourseManagement {
             err: 0,
             mes: 'Cập nhật trạng thái học viên thành công',
             data: candidates
+        };
+    }
+
+    async getNotifications() {
+        await this.ensureCenterActive();
+        
+        const courses = await this.courseRepo.getByCenterId(this.centerId);
+        if (!courses || !courses.length) {
+            return {
+                err: 0,
+                mes: 'Không có thông báo',
+                data: {
+                    count: 0,
+                    notifications: []
+                }
+            };
+        }
+
+        const notifications = [];
+        const plainCourses = courses.map((course) => (course?.toJSON ? course.toJSON() : course));
+
+        // Collect all candidate IDs from pending requests
+        const pendingCandidateIds = new Set();
+        plainCourses.forEach((course) => {
+            const candidates = Array.isArray(course.candidates) ? course.candidates : [];
+            candidates.forEach((candidate) => {
+                if (candidate.status === STUDENT_STATUSES.PENDING && candidate.candidate_id) {
+                    pendingCandidateIds.add(candidate.candidate_id);
+                }
+            });
+        });
+
+        // Fetch candidate details in batch
+        let candidateMap = new Map();
+        if (pendingCandidateIds.size > 0) {
+            const candidateDetails = await this.candidateRepo.getCandidatesByIds([...pendingCandidateIds]);
+            candidateDetails.forEach((candidate) => {
+                candidateMap.set(candidate.candidate_id, {
+                    full_name: candidate.full_name,
+                    email: candidate.email,
+                    phone: candidate.phone
+                });
+            });
+        }
+
+        // Build notifications
+        plainCourses.forEach((course) => {
+            const candidates = Array.isArray(course.candidates) ? course.candidates : [];
+            const pendingCandidates = candidates.filter(
+                (candidate) => candidate.status === STUDENT_STATUSES.PENDING
+            );
+
+            pendingCandidates.forEach((candidate) => {
+                const candidateInfo = candidateMap.get(candidate.candidate_id) || {};
+                notifications.push({
+                    id: `${course.course_id}-${candidate.candidate_id}`,
+                    course_id: course.course_id,
+                    course_name: course.name,
+                    candidate_id: candidate.candidate_id,
+                    candidate_name: candidateInfo.full_name || 'Học viên',
+                    candidate_email: candidateInfo.email,
+                    candidate_phone: candidateInfo.phone,
+                    requested_at: candidate.requested_at,
+                    type: 'pending_enrollment'
+                });
+            });
+        });
+
+        // Sort by requested_at desc (newest first)
+        notifications.sort((a, b) => {
+            const timeA = a.requested_at ? new Date(a.requested_at).getTime() : 0;
+            const timeB = b.requested_at ? new Date(b.requested_at).getTime() : 0;
+            return timeB - timeA;
+        });
+
+        return {
+            err: 0,
+            mes: 'Lấy thông báo thành công',
+            data: {
+                count: notifications.length,
+                notifications
+            }
         };
     }
 }

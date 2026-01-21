@@ -14,6 +14,9 @@ import profileRecruiter from './Recruiter/profile.js'
 import authCenter from './Center/auth.js'
 import centerCourses from './Center/course-management.js'
 import profileCenter from './Center/profile.js'
+import statisticsCenter from './Center/statistics.js'
+import trainingFieldsCenter from './Center/training-fields.js'
+import notificationsCenter from './Center/notifications.js'
 
 import authAdmin from './Admin/auth.js'
 import createAdmin from './Admin/create-admin.js'
@@ -47,8 +50,11 @@ const initRoutes = (app) => {
     app.use('/recruiter/profile', profileRecruiter)
 
     app.use('/center/auth', authCenter)
+    app.use('/center/training-fields', trainingFieldsCenter) // Public endpoint - must be before authenticated routes
     app.use('/center', centerCourses)
     app.use('/center/profile', profileCenter)
+    app.use('/center/statistics', statisticsCenter)
+    app.use('/center', notificationsCenter)
 
     app.use('/admin', createAdmin)
     app.use('/admin', candidateAdmin)
