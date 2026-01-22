@@ -52,3 +52,21 @@ export const getRecruiterDetailAdmin = (recruiter_id) =>
             resolve({ err: 1, mes: error.message });
         }
     });
+
+export const deleteRecruiterAdmin = (recruiter_id) =>
+    new Promise(async (resolve) => {
+        try {
+            const repo = new (
+                await import("../../repository/recruiter.js")
+            ).RecruiterRepository();
+            const result = await repo.deleteRecruiter(recruiter_id);
+            if (result) {
+                resolve({ err: 0, mes: "Xóa nhà tuyển dụng thành công" });
+            } else {
+                resolve({ err: 1, mes: "Không tìm thấy nhà tuyển dụng" });
+            }
+        } catch (error) {
+            console.log("Error in deleteRecruiterAdmin:", error);
+            resolve({ err: 1, mes: error.message });
+        }
+    });

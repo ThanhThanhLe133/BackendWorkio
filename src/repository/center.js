@@ -20,13 +20,14 @@ class CenterRepository {
     }
 
     buildOrder(sort_by, order) {
-        const direction = String(order || 'DESC').toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+        const direction =
+            String(order || "DESC").toUpperCase() === "ASC" ? "ASC" : "DESC";
         const map = {
-            name: ['name', direction],
-            created_at: ['created_at', direction],
-            updated_at: ['updated_at', direction],
+            name: ["name", direction],
+            created_at: ["created_at", direction],
+            updated_at: ["updated_at", direction],
         };
-        return [map[sort_by] || ['created_at', 'DESC']];
+        return [map[sort_by] || ["created_at", "DESC"]];
     }
 
     async getAll(filters = {}) {
@@ -48,10 +49,11 @@ class CenterRepository {
                 { phone: { [Op.iLike]: keyword } },
             ];
         }
-        if (is_active !== undefined) where.is_active = is_active === 'true' || is_active === true;
+        if (is_active !== undefined)
+            where.is_active = is_active === "true" || is_active === true;
         const addressInclude = {
             model: db.Address,
-            as: 'address',
+            as: "address",
         };
         if (province_code || ward_code) {
             addressInclude.where = {};
@@ -62,8 +64,8 @@ class CenterRepository {
         const include = [
             {
                 model: db.User,
-                as: 'center',
-                attributes: ['id', 'email', 'name', 'avatar_url', 'role_id']
+                as: "center",
+                attributes: ["id", "email", "name", "avatar_url", "role_id"],
             },
             addressInclude,
         ];
@@ -72,19 +74,20 @@ class CenterRepository {
             const rawValues = Array.isArray(training_field)
                 ? training_field
                 : String(training_field)
-                    .split(',')
+                    .split(",")
                     .map((value) => value.trim())
                     .filter(Boolean);
 
             if (rawValues.length > 0) {
                 include.push({
                     model: db.Course,
-                    as: 'courses',
+                    as: "courses",
                     attributes: [],
                     required: true,
-                    where: rawValues.length > 1
-                        ? { training_field: { [Op.in]: rawValues } }
-                        : { training_field: rawValues[0] },
+                    where:
+                        rawValues.length > 1
+                            ? { training_field: { [Op.in]: rawValues } }
+                            : { training_field: rawValues[0] },
                 });
             }
         }
@@ -120,11 +123,11 @@ class CenterRepository {
             include: [
                 {
                     model: db.User,
-                    as: 'center',
+                    as: "center",
                 },
                 {
                     model: db.Address,
-                    as: 'address',
+                    as: "address",
                 },
             ],
         });
@@ -165,8 +168,16 @@ class CenterRepository {
 
             // Extract center fields from payload
             const centerFields = {};
-            const allowedFields = ['name', 'phone', 'email', 'website', 'description', 'code', 'is_active'];
-            
+            const allowedFields = [
+                "name",
+                "phone",
+                "email",
+                "website",
+                "description",
+                "code",
+                "is_active",
+            ];
+
             for (const field of allowedFields) {
                 if (payload[field] !== undefined) {
                     centerFields[field] = payload[field];
@@ -177,7 +188,7 @@ class CenterRepository {
             if (Object.keys(centerFields).length > 0) {
                 await db.Center.update(centerFields, {
                     where: { center_id: user_id },
-                    transaction
+                    transaction,
                 });
             }
 
@@ -186,14 +197,19 @@ class CenterRepository {
                 if (center.address_id) {
                     await db.Address.update(payload.addressInfo, {
                         where: { id: center.address_id },
-                        transaction
+                        transaction,
                     });
                 } else {
-                    const newAddress = await db.Address.create(payload.addressInfo, { transaction });
-                    await db.Center.update({ address_id: newAddress.id }, {
-                        where: { center_id: user_id },
-                        transaction
+                    const newAddress = await db.Address.create(payload.addressInfo, {
+                        transaction,
                     });
+                    await db.Center.update(
+                        { address_id: newAddress.id },
+                        {
+                            where: { center_id: user_id },
+                            transaction,
+                        },
+                    );
                 }
             }
 
@@ -203,6 +219,20 @@ class CenterRepository {
             await transaction.rollback();
             throw error;
         }
+    }
+
+    async updateCenter(center_id, data, transaction = null) {
+        return db.Center.update(data, {
+            where: { center_id },
+            transaction,
+        });
+    }
+
+    async deleteCenter(center_id, transaction = null) {
+        return db.Center.destroy({
+            where: { center_id },
+            transaction,
+        });
     }
 }
 

@@ -1,9 +1,10 @@
-import * as controllers from '../../controllers/index.js'
-import express from 'express'
-import { verifyTokenAdmin } from '../../middleWares/verify_token.js';
-const router = express.Router()
+import * as controllers from "../../controllers/index.js";
+import express from "express";
+import { verifyTokenAdmin } from "../../middleWares/verify_token.js";
+const router = express.Router();
 router.use(verifyTokenAdmin);
-router.post('/create-recruiter', controllers.createRecruiter)
-router.get('/recruiters', controllers.getAllRecruitersAdmin)
-router.get('/recruiter', controllers.getRecruiterAdmin)
-export default router; 
+router.post("/create-recruiter", controllers.createRecruiter);
+router.get("/recruiters", controllers.getAllRecruitersAdmin);
+router.get("/recruiter", controllers.getRecruiterAdmin);
+router.delete("/recruiter", controllers.deleteRecruiterAdmin);
+export default router;
