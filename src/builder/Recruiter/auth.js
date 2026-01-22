@@ -76,7 +76,7 @@ export class RecruiterAuthBuilder {
         const access_token = jwt.sign(
             { id: user.id, email: user.email, role: user.role_id },
             process.env.JWT_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "1d" }
         );
 
         const refresh_token = jwt.sign(
@@ -113,7 +113,7 @@ export class RecruiterAuthBuilder {
             const new_access_token = jwt.sign(
                 { id: user.id, email: user.email, role_id: user.role_id },
                 process.env.JWT_SECRET,
-                { expiresIn: "1h" }
+                { expiresIn: "1d" }
             );
 
             await transaction.commit();
@@ -144,7 +144,7 @@ export class RecruiterAuthBuilder {
         const token = jwt.sign(
             { email: this.email },
             process.env.RESET_PASSWORD_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "1d" }
         );
 
         await sendResetPasswordEmail(this.email, token, this.role);

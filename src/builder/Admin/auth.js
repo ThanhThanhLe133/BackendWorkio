@@ -48,7 +48,7 @@ export class AdminAuthBuilder {
         const access_token = jwt.sign(
             { id: user.id, email: user.email, role_id: user.role_id },
             process.env.JWT_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "1d" }
         );
 
         const refresh_token = jwt.sign(
@@ -85,7 +85,7 @@ export class AdminAuthBuilder {
         const new_access_token = jwt.sign(
             { id: user.id, email: user.email, role_id: user.role_id },
             process.env.JWT_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "1d" }
         );
 
         return {
@@ -104,7 +104,7 @@ export class AdminAuthBuilder {
         const token = jwt.sign(
             { email: this.email },
             process.env.RESET_PASSWORD_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "1d" }
         );
 
         await sendResetPasswordEmail(this.email, token, this.role);

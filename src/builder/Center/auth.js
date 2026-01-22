@@ -35,7 +35,7 @@ export class CenterAuthBuilder {
             console.log("User has center:", user.center ? "Yes" : "No");
             console.log("User role:", user.role?.value);
         }
-        
+
         if (!user) throw new Error("Không tìm thấy thông tin trung tâm");
         if (!user.center) throw new Error("Không tìm thấy thông tin trung tâm");
         if (user.center.is_active === false) {
@@ -48,7 +48,7 @@ export class CenterAuthBuilder {
         const access_token = jwt.sign(
             { id: user.id, email: user.email, role: user.role_id },
             process.env.JWT_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "1d" }
         );
 
         const refresh_token = jwt.sign(
@@ -77,7 +77,7 @@ export class CenterAuthBuilder {
         const token = jwt.sign(
             { email: this.email },
             process.env.RESET_PASSWORD_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "1d" }
         );
 
         await sendResetPasswordEmail(this.email, token, this.role);
@@ -89,7 +89,7 @@ export class CenterAuthBuilder {
     }
 
     async resetPasswordCenter() {
-        if (!this.token || !this.newPassword) 
+        if (!this.token || !this.newPassword)
             throw new Error("Missing token or password");
 
         const decoded = jwt.verify(this.token, process.env.RESET_PASSWORD_SECRET);
@@ -141,7 +141,7 @@ export class CenterAuthBuilder {
         const new_access_token = jwt.sign(
             { id: user.id, email: user.email, role_id: user.role_id },
             process.env.JWT_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "1d" }
         );
 
         return {
