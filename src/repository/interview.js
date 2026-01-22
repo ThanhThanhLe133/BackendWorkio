@@ -48,6 +48,13 @@ class InterviewRepository {
                 {
                     model: db.JobPost,
                     as: 'job_post',
+                    include: [
+                        {
+                            model: db.Recruiter,
+                            as: 'recruiter',
+                            attributes: ['company_name']
+                        }
+                    ]
                 },
             ],
             order: [['scheduled_time', 'ASC']],
@@ -155,7 +162,7 @@ class InterviewRepository {
             return candidates.map(c => {
                 const user = c.candidate || {}; // Alias trong model Candidate là 'candidate' (trỏ tới User)
                 const interview = c.interview && c.interview.length > 0 ? c.interview[0] : null;
-                
+
                 return {
                     id: c.candidate_id,
                     candidate_id: c.candidate_id,
