@@ -5,11 +5,13 @@ import profileCandidate from './Candidate/profile.js'
 import recruiterCandidate from './Candidate/recruiter.js'
 import candidateCourses from './Candidate/course.js'
 import dashboardCandidate from './Candidate/dashboard.js'
+import notificationsCandidate from './Candidate/notifications.js'
 
 import authRecruiter from './Recruiter/auth.js'
 import jobPostRecruiter from './Recruiter/job-post-management.js'
 import interviewRecruiter from './Recruiter/interview.js'
 import profileRecruiter from './Recruiter/profile.js'
+import notificationsRecruiter from './Recruiter/notifications.js'
 
 import authCenter from './Center/auth.js'
 import centerCourses from './Center/course-management.js'
@@ -43,11 +45,13 @@ const initRoutes = (app) => {
     app.use('/candidate', recruiterCandidate)
     app.use('/candidate', candidateCourses)
     app.use('/candidate/dashboard', dashboardCandidate)
+    app.use('/candidate', notificationsCandidate)
 
     app.use('/recruiter/auth', authRecruiter)
     app.use('/recruiter', jobPostRecruiter)
     app.use('/recruiter', interviewRecruiter)
     app.use('/recruiter/profile', profileRecruiter)
+    app.use('/recruiter', notificationsRecruiter)
 
     app.use('/center/auth', authCenter)
     app.use('/center/training-fields', trainingFieldsCenter) // Public endpoint - must be before authenticated routes

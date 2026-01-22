@@ -3,17 +3,28 @@ import cors from "cors";
 import http from "http";
 import dotenv from "dotenv";
 import initRoutes from "./src/routers/index.js";
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
 
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const publicPath = path.join(__dirname, 'src', 'public');
+
+
+app.use(express.static(publicPath));
+// Dòng trên có nghĩa là: 
+// Truy cập http://localhost:3000/uploads/anh.png -> tìm ở thư mục src/public/uploads/anh.png
+
 app.use(
     cors({
-        // Allow requests from the configured client URL or (for dev) allow any origin.
-        // Using `true` reflects the request origin, avoiding CORS blocks during development.
-        origin: process.env.CLIENT_URL || true,
+        origin: process.env.CLIENT_URL || "*",
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     })
 );

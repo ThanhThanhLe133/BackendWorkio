@@ -204,13 +204,34 @@ class RecruiterRepository {
     async updateRecruiterProfile(user_id, payload) {
         const transaction = await db.sequelize.transaction();
         try {
-            const { recruiterInfo, addressInfo } = payload;
+            const { 
+                recruiterInfo, 
+                addressInfo,
+                avatar_url, // <--- 1. Extract avatar_url
+            } = payload;
 
             const recruiter = await db.Recruiter.findOne({
                 where: { recruiter_id: user_id },
             });
             if (!recruiter) {
                 throw new Error("Recruiter not found");
+            }
+
+            // 2. Cập nhật bảng User (Avatar & Tên công ty làm tên hiển thị)
+            const userUpdateData = {};
+            if (avatar_url !== undefined) {
+                userUpdateData.avatar_url = avatar_url;
+            }
+            // Nếu muốn đồng bộ tên công ty sang bảng User để hiển thị ở header
+            if (recruiterInfo && recruiterInfo.company_name) {
+                userUpdateData.name = recruiterInfo.company_name;
+            }
+
+            if (Object.keys(userUpdateData).length > 0) {
+                await db.User.update(
+                    userUpdateData,
+                    { where: { id: user_id }, transaction }
+                );
             }
 
             // Check tax_number uniqueness if it's being updated

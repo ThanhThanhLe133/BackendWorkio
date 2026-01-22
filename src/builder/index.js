@@ -11,11 +11,14 @@ export * from './Admin/report-management.js'
 export * from './Candidate/auth.js'
 export * from './Candidate/job-post-management.js'
 export * from './Candidate/profile.js'
+export * from './Candidate/notifications.js'
+
 
 export * from './Recruiter/auth.js'
 export * from './Recruiter/job-post-management.js'
 export * from './Recruiter/interview.js'
 export * from './Recruiter/profile.js'
+export * from './Recruiter/notifications.js'
 
 export * from './Center/auth.js'
 export * from './Center/course-management.js'

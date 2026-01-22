@@ -323,10 +323,11 @@ class CandidateRepository {
             const {
                 candidateInfo = {},
                 addressInfo,
-                studyHistories,
+                studyHistories, // Mảng từ frontend (chứa start_date, end_date, major...)
                 workExperiences,
                 cvPayload,
                 cv,
+                avatar_url,
             } = payload;
 
             const candidate = await db.Candidate.findOne({
@@ -336,36 +337,57 @@ class CandidateRepository {
             if (!candidate) {
                 throw new Error("Candidate not found");
             }
+            
+            // 1. Cập nhật Avatar (nếu có)
+            if (avatar_url !== undefined) {
+                await db.User.update(
+                    { avatar_url },
+                    { where: { id: user_id }, transaction }
+                );
+            }
 
-            let normalizedStudyHistories = studyHistories !== undefined ? normalizeStudyHistories(studyHistories) : null;
-            let normalizedWorkExperiences = workExperiences !== undefined ? normalizeWorkExperiences(workExperiences) : null;
+            // 1. Cập nhật User (Avatar VÀ Name)
+            // Cập nhật bảng User (Tên + Avatar) để đồng bộ dữ liệu login
+            const userUpdateData = {};
+        
+            // Nếu payload có gửi avatar -> update avatar user
+            if (avatar_url !== undefined) userUpdateData.avatar_url = avatar_url;
+        
+            // [FIX] Nếu payload có tên -> update tên user luôn
+            if (candidateInfo && candidateInfo.full_name) {
+                userUpdateData.name = candidateInfo.full_name;
+            }
+
+            if (Object.keys(userUpdateData).length > 0) {
+                await db.User.update(
+                    userUpdateData,
+                    { where: { id: user_id }, transaction }
+                );
+            }
+
+            // (Giữ logic CV cũ)
             const incomingCvPayload = cvPayload || cv;
             let cvProfileUpdate = null;
             let mergedCandidateInfo = { ...candidateInfo };
-
             if (incomingCvPayload) {
                 const parsedCv = normalizeCvPayload(incomingCvPayload);
-                mergedCandidateInfo = {
-                    ...parsedCv.candidateInfo,
-                    ...mergedCandidateInfo,
-                };
-                if (!normalizedStudyHistories) normalizedStudyHistories = parsedCv.studyHistories;
-                if (!normalizedWorkExperiences) normalizedWorkExperiences = parsedCv.workExperiences;
+                mergedCandidateInfo = { ...parsedCv.candidateInfo, ...mergedCandidateInfo };
                 cvProfileUpdate = parsedCv.cvProfile;
+                // Lưu ý: Nếu có CV parse, ta tạm thời không ghi đè studyHistory/workExperience tự động
+                // vì ưu tiên dữ liệu người dùng nhập từ form
             }
 
+            // 2. Cập nhật thông tin Candidate chính
             const candidateUpdate = cleanUndefined(mergedCandidateInfo);
             await db.Candidate.update(
                 {
                     ...candidateUpdate,
                     ...(cvProfileUpdate ? { cv_profile: cvProfileUpdate, cv_uploaded_at: new Date() } : {}),
                 },
-                {
-                    where: { candidate_id: user_id },
-                    transaction,
-                }
+                { where: { candidate_id: user_id }, transaction }
             );
 
+            // 3. Cập nhật Address
             if (addressInfo) {
                 await db.Address.update(cleanUndefined(addressInfo), {
                     where: { id: candidate.address_id },
@@ -373,41 +395,56 @@ class CandidateRepository {
                 });
             }
 
-            if (normalizedStudyHistories) {
+            // 4. [CẬP NHẬT QUAN TRỌNG] Xử lý StudyHistory
+            // Bỏ qua hàm normalizeStudyHistories cũ vì nó dùng start_year, ta tự map thủ công
+            if (studyHistories) {
                 await db.StudyHistory.destroy({
                     where: { candidate_id: user_id },
                     transaction,
                 });
-                if (normalizedStudyHistories.length) {
-                    const studyHistoriesWithCandidateId = normalizedStudyHistories.map((history) => ({
-                        ...history,
+
+                if (studyHistories.length > 0) {
+                    const cleanStudyHistory = studyHistories.map((item) => ({
                         candidate_id: user_id,
+                        school_name: item.school_name,
+                        // Map 'major' (Frontend) -> 'field_of_study' (DB)
+                        field_of_study: item.major, 
+                        degree: item.degree,
+                        // Lưu thẳng start_date/end_date (Frontend gửi dạng 'YYYY-MM-DD' hoặc null)
+                        start_date: item.start_date || null,
+                        end_date: item.end_date || null,
+                        // Set mặc định các field required khác nếu cần
+                        degree_level: 'Custom' 
                     }));
-                    await db.StudyHistory.bulkCreate(studyHistoriesWithCandidateId, { transaction });
+
+                    await db.StudyHistory.bulkCreate(cleanStudyHistory, { transaction });
                 }
             }
 
-            if (normalizedWorkExperiences) {
+            // 5. Xử lý WorkExperience
+            // (Tương tự, ta map lại để chắc chắn)
+            if (workExperiences) {
                 await db.WorkExperience.destroy({
                     where: { candidate_id: user_id },
                     transaction,
                 });
-                if (normalizedWorkExperiences.length) {
-                    const workExperiencesWithCandidateId = normalizedWorkExperiences.map((experience) => ({
-                        ...experience,
-                        candidate_id: user_id,
+                if (workExperiences.length > 0) {
+                     // Dùng trực tiếp dữ liệu từ FE, không cần normalizeWorkExperiences nếu FE đã gửi đúng
+                    const cleanWorkExperience = workExperiences.map((item) => ({
+                         candidate_id: user_id,
+                         company_name: item.company_name,
+                         position: item.position,
+                         start_date: item.start_date || null,
+                         end_date: item.end_date || null,
+                         description: item.description
                     }));
-                    await db.WorkExperience.bulkCreate(workExperiencesWithCandidateId, { transaction });
+                    await db.WorkExperience.bulkCreate(cleanWorkExperience, { transaction });
                 }
             }
 
-            const currentStudyHistories =
-                normalizedStudyHistories ??
-                (await db.StudyHistory.findAll({ where: { candidate_id: user_id }, transaction }));
-            const currentWorkExperiences =
-                normalizedWorkExperiences ??
-                (await db.WorkExperience.findAll({ where: { candidate_id: user_id }, transaction }));
-
+            // 6. Tính toán lại Vector matching
+            const currentStudyHistories = await db.StudyHistory.findAll({ where: { candidate_id: user_id }, transaction });
+            const currentWorkExperiences = await db.WorkExperience.findAll({ where: { candidate_id: user_id }, transaction });
             const courseRepo = new CourseRepository();
             const trainingHistory = await courseRepo.getByCandidateId(user_id);
 
