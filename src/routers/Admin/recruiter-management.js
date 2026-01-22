@@ -7,4 +7,5 @@ router.post("/create-recruiter", controllers.createRecruiter);
 router.get("/recruiters", controllers.getAllRecruitersAdmin);
 router.get("/recruiter", controllers.getRecruiterAdmin);
 router.delete("/recruiter", controllers.deleteRecruiterAdmin);
+router.patch("/recruiter", controllers.updateRecruiterAdmin);
 export default router;

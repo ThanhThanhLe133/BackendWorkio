@@ -11,7 +11,9 @@ const server = http.createServer(app);
 
 app.use(
     cors({
-        origin: process.env.CLIENT_URL || "*",
+        // Allow requests from the configured client URL or (for dev) allow any origin.
+        // Using `true` reflects the request origin, avoiding CORS blocks during development.
+        origin: process.env.CLIENT_URL || true,
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     })
 );

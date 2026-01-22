@@ -84,3 +84,22 @@ export const deleteRecruiterAdmin = async (req, res) => {
         return internalServerError(res);
     }
 };
+
+export const updateRecruiterAdmin = async (req, res) => {
+    try {
+        const admin_id = getAdminId(req, res);
+        if (!admin_id) return;
+
+        const { recruiter_id } = req.body;
+        if (!recruiter_id) return badRequest("Missing recruiter_id", res);
+
+        const response = await services.updateRecruiterAdmin(req.body);
+        if (response.err === 1) {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log(error);
+        return internalServerError(res);
+    }
+};

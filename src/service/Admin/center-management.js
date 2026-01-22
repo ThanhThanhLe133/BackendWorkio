@@ -187,6 +187,12 @@ export const updateCenterAdmin = ({
                     province_code: addressInfo.province_code,
                 };
 
+                // Server-side validation: Address model requires `province_code`
+                if (!normalizedAddress.province_code) {
+                    await transaction.rollback();
+                    return resolve({ err: 1, mes: "province_code is required" });
+                }
+
                 if (address_id) {
                     // Update existing address
                     await addressRepo.update(address_id, normalizedAddress, transaction);

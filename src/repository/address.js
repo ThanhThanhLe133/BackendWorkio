@@ -16,6 +16,10 @@ class AddressRepository {
     async getById(id) {
         return await db.Address.findByPk(id);
     }
+
+    async update(id, data, transaction = null) {
+        return await db.Address.update(data, { where: { id }, transaction });
+    }
 }
 
 export { AddressRepository };

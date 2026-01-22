@@ -213,6 +213,17 @@ class RecruiterRepository {
                 throw new Error("Recruiter not found");
             }
 
+            // Check tax_number uniqueness if it's being updated
+            if (recruiterInfo && recruiterInfo.tax_number && recruiterInfo.tax_number !== recruiter.tax_number) {
+                const existingRecruiter = await db.Recruiter.findOne({
+                    where: { tax_number: recruiterInfo.tax_number },
+                    transaction,
+                });
+                if (existingRecruiter) {
+                    throw new Error("Tax number already exists");
+                }
+            }
+
             // Update Recruiter
             if (recruiterInfo) {
                 await db.Recruiter.update(recruiterInfo, {
