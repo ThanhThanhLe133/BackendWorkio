@@ -18,6 +18,18 @@ export const countUnemploymentBenefits = async ({ identify_number }) => new Prom
 
         if (socialInsurances.err) return socialInsurances;
 
+        // Nếu không có dữ liệu BHXH
+        if (!socialInsurances.data || socialInsurances.data.length === 0) {
+            return resolve({
+                err: 0,
+                mes: "Không có dữ liệu BHXH để tính trợ cấp thất nghiệp",
+                data: {
+                    totalMonths: 0,
+                    totalBenefits: 0
+                }
+            });
+        }
+
         let totalBenefits = 0;
         let totalMonths = 0;
 

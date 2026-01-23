@@ -14,7 +14,7 @@ class SocialInsuranceRepository {
 
     async getByIdentifyNumber(identify_number) {
         return db.SocialInsurance.findAll({
-            where: { indentify_number: identify_number },
+            where: { identify_number: identify_number },
             include: [
                 {
                     model: db.Candidate,

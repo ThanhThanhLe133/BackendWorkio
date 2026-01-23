@@ -20,7 +20,7 @@ export default (sequelize) => {
                 primaryKey: true,
                 defaultValue: DataTypes.UUIDV4,
             },
-            indentify_number: {
+            identify_number: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },

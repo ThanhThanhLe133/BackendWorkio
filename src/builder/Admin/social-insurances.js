@@ -22,8 +22,8 @@ export class SocialInsurancesBuilder {
         const list = await this.socialInsuranceRepo.getByIdentifyNumber(identify_number);
         if (!list || list.length === 0) {
             return {
-                err: 1,
-                mes: `Không tìm thấy BHXH cho ứng viên ${identify_number}`,
+                err: 0,
+                mes: "Không có dữ liệu BHXH",
                 data: []
             };
         }
